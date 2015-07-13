@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tank</title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+    <h1>TANK大战</h1>
+    <canvas id="map" width="400" height="300" style="background-color:black;"></canvas>
+
+    <script src="tank4.js"></script>
+    <script>
+    var canvas=document.getElementById('map');
+    var cxt=canvas.getContext('2d');
+    // 创建我的tank
+    var hero=new Hero(40,40,0);
+    // 定义一颗空子弹
+    // 创建敌人的tank
+    var enemyTanks=[];
+    for (var i = 0; i < 3; i++) {
+        var enemyTank=new EnemyTank((i+1)*50,0,2);
+        enemyTanks[i]=enemyTank;
+    }
+
+    // 专门的函数用于定时刷新画布：把要出现的元素进行重绘（游戏的思想之一）
+    function flashMap(){
+        cxt.clearRect(0,0,400,300);  //先清理画布
+        drawTank(hero);  //重绘自己的tank
+        hero.drawHeroBullet();  //绘制自己坦克的子弹
+        for (var i = 0; i < 3; i++) {
+            drawTank(enemyTanks[i]);
+        }
+    }
+
+    // 监控按键操作，重绘tank完成移动
+    document.onkeydown=function(e){
+        var e=e||event;
+        var code=e.keyCode;
+        switch(code){
+            case 87:  //w
+                // hero.y-=hero.speed;  这样写不是面向对象，应该把移动的方法写成Hero对象的一个方法
+                hero.moveUp();
+                break;
+            case 68:  //d
+                hero.moveRight();
+                break;
+            case 83:  //s
+                hero.moveDown();
+                break;
+            case 65:  //a
+                hero.moveLeft();
+                break;
+            case 74:  //j，发射子弹
+                hero.shotEnemy();
+                break;
+        }
+        flashMap();  //重绘画布
+    }
+    // 每隔100ms刷新一次画布，子弹这些就能自动动起来了；并且带有初始化画布的功能
+    var t_global=setInterval(flashMap,100);
+    </script>
+</body>
+</html>
