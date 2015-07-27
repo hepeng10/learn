@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS图片裁剪</title>
+    <style>
+    *{-moz-user-select:none;} /*FF:禁止选中，避免拖动的时候导致图片出现选中变色效果*/
+    body{background-color:#333;}
+    #box{position:absolute;top:100px;left:200px;width:427px;height:427px;}
+    #img1{opacity:0.5;position:absolute;top:0;left:0;} /*第一层*/
+    /*rect(t,r,b,l)对一个图片进行裁剪*/
+    #img2{position:absolute;top:0;left:0;clip:rect(0,200px,200px,0);} /*第二层*/
+    #main{border:1px solid white;width:200px;height:200px;position:absolute;top:0px;left:0;}
+    .minDiv{position:absolute;width:8px;height:8px;background-color:white;}
+    #t-l{left:-4px;top:-4px;cursor:nw-resize;} /*使用cursor将鼠标样式改为方向；nw表示north,west*/
+    #t-c{top:-4px;left:50%;margin-left:-4px;cursor:n-resize;} /*这里使用百分百，就能保证触点与外框的相对位置*/
+    #t-r{top:-4px;left:100%;margin-left:-4px;cursor:ne-resize;}
+    #c-l{top:50%;left:-4px;margin-top:-4px;cursor:w-resize;}
+    #c-r{top:50%;left:100%;margin-top:-4px;margin-left:-4px;cursor:e-resize;}
+    #b-l{top:100%;left:-4px;margin-top:-4px;cursor:sw-resize;}
+    #b-c{top:100%;left:50%;margin-top:-4px;margin-left:-4px;cursor:s-resize;}
+    #b-r{top:100%;left:100%;margin-top:-4px;margin-left:-4px;cursor:se-resize;}
+    #preview{position:absolute;width:427px;height:427px;top:100px;left:670px}
+    #img3{position:absolute;} /*要让clip生效，需要对图片设置定位属性*/
+    </style>
+</head>
+<body>
+<div id="box">
+    <img src="img/1.png" id="img1">  <!--第一次：半透明的底图-->
+    <img src="img/1.png" id="img2">  <!--第二层：不透明的原图，覆盖在底图上，并用css的clip进行裁剪-->
+    <div id="main">  <!--第三层：布局拖动区域和8个拖动触点-->
+        <div class="minDiv" id="t-l"></div>
+        <div class="minDiv" id="t-c"></div>
+        <div class="minDiv" id="t-r"></div>
+        <div class="minDiv" id="c-l"></div>
+        <div class="minDiv" id="c-r"></div>
+        <div class="minDiv" id="b-l"></div>
+        <div class="minDiv" id="b-c"></div>
+        <div class="minDiv" id="b-r"></div>
+    </div>
+</div>
+<div id="preview"><img src="img/1.png" id="img3"></div>
+    
+<script>
+    function getStyle(dom,attr){
+        return dom.currentStyle?dom.currentStyle[attr]:getComputedStyle(dom)[attr];
+    }
+    // 获取元素相对屏幕左边和上边的距离
+    function getPosition(node){
+        var left=node.offsetLeft;
+        var top=node.offsetTop;
+        var parent=node.offsetParent;
+        while(parent){
+            left+=parent.offsetLeft;
+            top+=parent.offsetTop;
+            parent=parent.offsetParent;
+        }
+        return {"left":left,"top":top};
+    }
+    // 触点移动
+    function rMove(e){
+        var x=e.clientX; //鼠标x坐标
+        if (x>imgRight-2) {
+            x=imgRight-2;
+        }
+        var addWidth=""; //鼠标移动后增加的宽度
+        var widthBefore=oMainDiv.offsetWidth-2; //选取框变化前的宽度，-2是减去border
+        addWidth=x-getPosition(oMainDiv).left-widthBefore;
+        oMainDiv.style.width=addWidth+widthBefore+'px'; //选取框变化后的宽度
+    }
+    function tMove(e){
+        var y=e.clientY;
+        if (y<imgTop) {
+            y=imgTop;
+        }
+        var addHeight="";
+        var heightBefore=oMainDiv.offsetHeight-2;
+        addHeight=getPosition(oMainDiv).top-y;
+        oMainDiv.style.height=addHeight+heightBefore+'px';
+        oMainDiv.style.top=oMainDiv.offsetTop-addHeight+'px'; //在修改高度的时候同时需要修改矩形框距离顶部的位置
+    }
+    function lMove(e){
+        var x=e.clientX;
+        if (x<imgLeft) {
+            x=imgLeft;
+        }
+        var addWidth="";
+        var widthBefore=oMainDiv.offsetWidth-2;
+        addWidth=getPosition(oMainDiv).left-x;
+        oMainDiv.style.width=addWidth+widthBefore+'px';
+        oMainDiv.style.left=oMainDiv.offsetLeft-addWidth+'px';
+    }
+    function bMove(e){
+        var y=e.clientY;
+        if (y>imgBottom-2) {
+            y=imgBottom-2;
+        }
+        var addHeight="";
+        var heightBefore=oMainDiv.offsetHeight-2;
+        addHeight=y-getPosition(oMainDiv).top-heightBefore;
+        oMainDiv.style.height=addHeight+heightBefore+'px';
+    }
+    // 主体拖动
+    function move(e){
+        var x=e.clientX; //获取当前鼠标的位置
+        var y=e.clientY;
+        var moveX=x-mX; //获取移动的距离
+        var moveY=y-mY;
+        mX=x; //保存当前鼠标的位置
+        mY=y;
+        var top=parseInt(getStyle(oMainDiv,'top'));
+        var left=parseInt(getStyle(oMainDiv,'left'));
+        var mainOffset=mainOffsetFn();
+        oMainDiv.style.top=top+moveY+'px';
+        oMainDiv.style.left=left+moveX+'px';
+        if (mainOffset['right']>=oImg.offsetWidth&&moveX>=0) { //当选取框右边到图片左边的距离大于图片宽度，则越界了；并且当鼠标往右移动才执行
+            var cross=mainOffset['right']-oImg.offsetWidth; //取得越界的值
+            oMainDiv.style.left=left-cross+'px'; //用到左边的距离减去越界的距离再赋值给到左边的距离，完成永不越界
+        }
+        if(mainOffset['top']<=0&&moveY<=0){  //注意不能用else if；
+            oMainDiv.style.top='0px';
+        }
+        if(mainOffset['left']<=0&&moveX<=0){
+            oMainDiv.style.left='0px';
+        }
+        if(mainOffset['bottom']>=oImg.offsetHeight&&moveY>=0){
+            var cross=mainOffset['bottom']-oImg.offsetHeight;
+            oMainDiv.style.top=top-cross+'px';
+        }
+    }
+    // 获取裁剪区域四边的相对位置
+    function mainOffsetFn(){
+        var top=oMainDiv.offsetTop;
+        var left=oMainDiv.offsetLeft;
+        var bottom=top+oMainDiv.offsetHeight;
+        var right=left+oMainDiv.offsetWidth;
+        return {"top":top,"left":left,"bottom":bottom,"right":right};
+    }
+    // 设置选区区域高亮
+    function setChoice(){
+        var mainOffset=mainOffsetFn();
+        var oImg=document.getElementById('img2');
+        oImg.style.clip="rect("+mainOffset['top']+"px,"+mainOffset['right']+"px,"+mainOffset['bottom']+"px,"+mainOffset['left']+"px)";
+    }
+    // 预览函数
+    function setPreview(){
+        var mainOffset=mainOffsetFn();
+        var oImg=document.getElementById('img3');
+        oImg.style.clip="rect("+mainOffset['top']+"px,"+mainOffset['right']+"px,"+mainOffset['bottom']+"px,"+mainOffset['left']+"px)";
+        oImg.style.top=-mainOffset['top']+'px';  //预览图是固定不动的，所以在裁剪的时候还需要修改top和left值保证位置不变
+        oImg.style.left=-mainOffset['left']+'px';
+    }
+
+    document.onselectstart = new Function('event.returnValue=false;'); //IE|webkit禁止选中，避免拖动的时候导致图片出现选中变色效果
+    var oMainDiv=document.getElementById('main'); //边框div
+    var oCR=document.getElementById('c-r'); //8个触点div
+    var oTC=document.getElementById('t-c');
+    var oCL=document.getElementById('c-l');
+    var oBC=document.getElementById('b-c');
+    var oTL=document.getElementById('t-l');
+    var oTR=document.getElementById('t-r');
+    var oBL=document.getElementById('b-l');
+    var oBR=document.getElementById('b-r');
+    var keydown=false; //鼠标是否按下状态
+    var contact=""; //被按下的触点
+    var mX,mY; //鼠标的x和y坐标
+    // 获取图片四边的相对位置
+    var oImg=document.getElementById('img1');
+    var imgTop=getPosition(oImg)['top'];
+    var imgLeft=getPosition(oImg)['left'];
+    var imgBottom=imgTop+oImg.offsetHeight;
+    var imgRight=imgLeft+oImg.offsetWidth;
+    // 鼠标按下事件
+    oCR.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="c-r";
+    }
+    oTC.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="t-c";
+    }
+    oCL.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="c-l";
+    }
+    oBC.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="b-c";
+    }
+    oTL.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="t-l";
+    }
+    oTR.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="t-r";
+    }
+    oBL.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="b-l";
+    }
+    oBR.onmousedown=function(e){
+        e.stopPropagation();
+        keydown=true;
+        contact="b-r";
+    }
+    oMainDiv.onmousedown=function(e){
+        mX=e.clientX;
+        mY=e.clientY;
+        keydown=true;
+        contact="main";
+    }
+    // 鼠标松开事件
+    window.onmouseup=function(e){
+        keydown=false;
+    }
+    // 鼠标移动事件
+    window.onmousemove=function(e){
+        if (keydown) {
+            switch(contact){
+                case "c-r":
+                    rMove(e);
+                    break;
+                case "t-c":
+                    tMove(e);
+                    break;
+                case "c-l":
+                    lMove(e);
+                    break;
+                case "b-c":
+                    bMove(e);
+                    break;
+                case "t-l":
+                    tMove(e);
+                    lMove(e);
+                    break;
+                case "t-r":
+                    tMove(e);
+                    rMove(e);
+                    break;
+                case "b-l":
+                    bMove(e);
+                    lMove(e);
+                    break;
+                case "b-r":
+                    bMove(e);
+                    rMove(e);
+                    break;
+                case "main":
+                    move(e);
+            }
+            setChoice();
+            setPreview();
+        }
+    }
+    setPreview();  //在程序开始的时候就调用一次，对预览图进行裁剪
+</script>
+</body>
+</html>
