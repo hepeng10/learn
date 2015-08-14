@@ -1,0 +1,17 @@
+body,div,section{margin:0px;padding:0px;}
+body{font-family:'微软雅黑';}
+
+/*首页*/
+section{width:100%;height:100%;position:relative;}
+.bgColor{background-color:#2d4081;}
+/*圆环，大小为最内部的那个圆，扩展的圆环是通过box-shadow绘制的*/
+/*定位到中心是使用top:50%,left:50%将原点定位到中心，再通过margin的top和left设置负值，为高和宽的一半*/
+.Bg-page1{width:429px;height:429px;border:1px solid #1f2b57;background-color:#233264;position:absolute;top:50%;left:50%;margin:-214px 0 0 -214px;border-radius:50%;box-shadow:0 0 0 113px #283972,0 0 0 114px #223161,0 0 0 193px #2a3d79,0 0 0 254px #2c3f7e,0 0 0 255px #2a3c79;}
+.bg-start{width:100%;height:100%;background:url(../images/bg-start.png) no-repeat;background-size:cover;position:absolute;}
+.main_page1{width:429px;height:429px;position:absolute;top:50%;left:50%;margin:-214px 0 0 -214px;}
+.main_page1 .rocket{width:165px;height:195px;position:absolute;top:-29px;left:48px;background:url(../images/rocket.png) no-repeat;animation:rocket 1s;-webkit-animation:rocket 1s;}
+.main_page1 .thanks{width:399px;height:228px;position:absolute;top:43px;left:38px;background:url(../images/thanks.png) no-repeat;opacity:0;animation:thanks 1s;-webkit-animation:thanks 1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}
+.main_page1 .widthyou{width:364px;height:134px;position:absolute;top:208px;left:38px;background:url(../images/widthyou.png) no-repeat;opacity:0;animation:widthyou 1s;-webkit-animation:widthyou 1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}
+.main_page1 .miaov{width:193px;height:82px;position:absolute;top:-7px;left:209px;background:url(../images/miaov.png) no-repeat;opacity:0;animation:miaov 1s;-webkit-animation:miaov 1s;animation-delay:1s;-webkit-animation-delay:1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}  /*使用animation-delay进行延迟，实现动画逐一运行的效果；使用animation-fill-mode:forwards让动画停到最后一帧的状态，避免opacity变为初始值0*/
+.arrow{width:90px;height:65px;position:absolute;left:50%;bottom:40px;margin-left:-45px;background:url(../images/arrow.png) no-repeat;animation:arrow 1s infinite;-webkit-animation:arrow 1s infinite;}
+/*控制动画播放*/

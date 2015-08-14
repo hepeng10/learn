@@ -1,0 +1,113 @@
+@charset "utf-8";
+
+/*首页*/
+/*火箭*/
+@keyframes rocket{
+    /*
+    0%{top:-29px;left:48px;}
+    修改top,left值性能不好，使用transform更好
+    */
+    0%{transform:translateX(-200px) translateY(200px);}
+    100%{}  /*不设置就是到元素样式中的值*/
+}
+@-webkit-keyframes rocket{
+    0%{transform:translateX(-200px) translateY(200px);}
+    100%{}
+}
+@keyframes rocketOut{
+    0%{}  /*不设置就是动画开始时为元素的样式中的值*/
+    100%{transform:translateX(200px) translateY(-200px);opacity:0;}
+}
+@-webkit-keyframes rocketOut{
+    0%{}
+    100%{transform:translateX(200px) translateY(-200px);opacity:0;}
+}
+/*妙味*/
+@keyframes miaov{
+    0%{transform:translateX(-193px) translateY(50px);opacity:0;}
+    100%{opacity:1;}
+}
+@-webkit-keyframes miaov{
+    0%{transform:translateX(-193px) translateY(50px);opacity:0;}
+    100%{opacity:1;}
+}
+@keyframes miaovOut{
+    0%{}
+    100%{opacity:0;}
+}
+@-webkit-keyframes miaovOut{
+    0%{}
+    100%{opacity:0;}
+}
+/*感恩*/
+@keyframes thanks{
+    0%{transform:translateY(100px);opacity:0;}
+    100%{transform:translateY(0px);opacity:1;}
+}
+@-webkit-keyframes thanks{
+    0%{transform:translateY(100px);opacity:0;}
+    100%{transform:translateY(0px);opacity:1;}
+}
+@keyframes thanksOut{
+    0%{}
+    100%{transform:translateY(100px);opacity:0;}
+}
+@-webkit-keyframes thanksOut{
+    0%{}
+    100%{transform:translateY(100px);opacity:0;}
+}
+/*一路有你*/
+@keyframes widthyou{
+    0%{transform:translateY(100px);opacity:0;}
+    100%{transform:translateY(0px);opacity:1;}
+}
+@-webkit-keyframes widthyou{
+    0%{transform:translateY(100px);opacity:0;}
+    100%{transform:translateY(0px);opacity:1;}
+}
+@keyframes widthyouOut{
+    0%{}
+    100%{transform:translateY(100px);opacity:0;}
+}
+@-webkit-keyframes widthyouOut{
+    0%{}
+    100%{transform:translateY(100px);opacity:0;}
+}
+/*圆圈出场动画*/
+@keyframes circleOut{
+    0%{}
+    100%{transform:translateY(100px);opacity:0;}
+}
+@-webkit-keyframes circleOut{
+    0%{}
+    100%{transform:translateY(100px);opacity:0;}
+}
+/*星星出场动画*/
+@keyframes starOut{
+    0%{}
+    100%{opacity:0;}
+}
+@-webkit-keyframes starOut{
+    0%{}
+    100%{opacity:0;}
+}
+/*底部箭头*/
+@keyframes arrow{
+    0%{transform:translateY(0px);opacity:0;}
+    50%{opacity:1;}
+    100%{transform:translateY(-50px);opacity:0;}
+}
+@-webkit-keyframes arrow{
+    0%{transform:translateY(0px);opacity:0;}
+    50%{opacity:1;}
+    100%{transform:translateY(-50px);opacity:0;}
+}
+/*音乐播放*/
+@keyframes run{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+@-webkit-keyframes run{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
