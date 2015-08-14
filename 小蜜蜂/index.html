@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小蜜蜂</title>
+    <style>
+    *{margin:0;padding:0;}
+    li{list-style:none;}
+    /*游戏区域：设置相对定位*/
+    #div1{width:800px;height:600px;overflow:hidden;background:black;margin:20px auto;position:relative;}
+    /*开始按钮*/
+    #gameBtn{color:white;font-size:20px;cursor:pointer;border:1px solid white;width:100px;height:30px;line-height:30px;text-align:center;position:absolute;top:285px;left:350px;}
+
+    /*以下元素都是通过JS动态生成*/
+    /*得分*/
+    #score{ color:#FFFFFF; font-size:20px;}
+    /*敌军蜜蜂整体*/
+    #bee{ position:relative;}
+    /*三种敌军蜜蜂*/
+    .enemy1{ width:40px; height:28px; background:url(images/mf1.png) no-repeat; float:left;}
+    .enemy2{ width:40px; height:28px; background:url(images/mf2.png) no-repeat; float:left;}
+    .enemy3{ width:40px; height:28px; background:url(images/mf3.png) no-repeat; float:left;}
+    /*自己的飞机*/
+    .air1{ width:46px; height:60px; background:url(images/fj.png) no-repeat; position:absolute;}
+    /*子弹*/
+    .bullet{ width:1px; overflow:hidden; height:10px; background:white; position:absolute;}
+    </style>
+</head>
+<body>
+    <div id="div1">
+        <div id="gameBtn">
+            开始游戏
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+    /*
+    单体写法：一个大的JSON（将变量、函数写在一个JSON中），具有命名空间的功能，避免冲突
+    功能分析：
+    1、元素的生成（createElement）
+    2、敌人的整体移动（setInterval）
+    3、碰撞检测（方法）
+    4、敌人跟随（运动算法）
+    5、关卡（实现多关）
+    6、其它功能（积分、血量等）
+    */
+    var oBtn=document.getElementById('gameBtn');
+    oBtn.onclick=function(){  //开始游戏
+        this.style.display='none';
+        Game.init('div1');
+    }
+    var Game={
+        oEnemy:{  //敌人的数据
+            e1:{style:'enemy1',blood:1,speed:5,score:1},
+            e2:{style:'enemy2',blood:2,speed:7,score:2},
+            e3:{style:'enemy3',blood:3,speed:10,score:3}
+        },
+        gk:[  //关卡数据
+            {  //第一关
+                eMap:[  //蜜蜂布局
+                    'e2','e2','e2','e2','e2','e2','e2','e2','e2','e2',
+                    'e2','e2','e2','e2','e2','e2','e2','e2','e2','e2',
+                    'e2','e2','e2','e2','e2','e2','e2','e2','e2','e2',
+                    'e1','e1','e1','e1','e1','e1','e1','e1','e1','e1',
+                    'e1','e1','e1','e1','e1','e1','e1','e1','e1','e1',
+                    'e1','e1','e1','e1','e1','e1','e1','e1','e1','e1'
+                ],
+                colNum:10,  //每行蜜蜂数
+                iSpeedX:10,  //蜜蜂整体移动的速度
+                iSpeedY:10,
+                times:2000  //蜜蜂出击间隔
+            },
+            {  //第二关
+                eMap:[  //蜜蜂布局
+                    'e3','e3','e3','e3','e3','e3','e3','e3','e3','e3',
+                    'e2','e2','e2','e2','e2','e2','e2','e2','e2','e2',
+                    'e2','e2','e2','e2','e2','e2','e2','e2','e2','e2',
+                    'e1','e1','e1','e1','e1','e1','e1','e1','e1','e1',
+                    'e1','e1','e1','e1','e1','e1','e1','e1','e1','e1',
+                    'e1','e1','e1','e1','e1','e1','e1','e1','e1','e1'
+                ],
+                colNum:10,  //每行蜜蜂数
+                iSpeedX:10,  //蜜蜂整体移动的速度
+                iSpeedY:10,
+                times:2000  //蜜蜂出击间隔
+            }
+        ],
+        air:{  //飞机的数据
+            style:'air1',
+            bulletStyle:'bullet'
+        },
+        init:function(id){  //初始化
+            this.oParent=document.getElementById(id);  //创建oParent属性为游戏区DOM对象
+            this.createScore();
+            this.createEnemy(0);
+            this.createAir();
+        },
+        createScore:function(){  //积分创建
+            var oS=document.createElement('div');
+            oS.id='score';
+            oS.innerHTML='积分：<span>0</span>';
+            this.oParent.appendChild(oS);
+            this.oSNum=oS.getElementsByTagName('span')[0];  //创建oSNum属性为分数DOM对象
+        },
+        createEnemy:function(iNow){  //创建敌人，接受当前关卡数，0是第一关
+            // 先判断是否是通关后开始新关卡，如果是则需要清除上一关的ul
+            if(this.oUl){
+                clearInterval(this.oUl.timer);
+                this.oParent.removeChild(this.oUl);
+            }
+            document.title='第'+(iNow+1)+'关';
+            // 开始创建关卡
+            var gk=this.gk[iNow];  //取出本关卡的数据
+            var arr=[];
+            var oUl=document.createElement('ul');
+            oUl.id='bee';
+            oUl.style.width=gk.colNum*40+'px';
+            this.oParent.appendChild(oUl);
+            oUl.style.left=(this.oParent.offsetWidth-oUl.offsetWidth)/2+'px';  //将敌军居中，必须写在添加到页面语句（上一句）后面
+            // 遍历创建蜜蜂
+            for(var i=0;i<gk.eMap.length;i++){
+                var oLi=document.createElement('li');
+                oLi.className=this.oEnemy[gk.eMap[i]].style;  //通过gk的map得到当前蜜蜂的名称，再通过名称从oEnemy中取出对应的style
+                // 给每个蜜蜂添加数据，使用自定义数据
+                oLi.blood=this.oEnemy[gk.eMap[i]].blood;
+                oLi.speed=this.oEnemy[gk.eMap[i]].speed;
+                oLi.score=this.oEnemy[gk.eMap[i]].score;
+                oUl.appendChild(oLi);  //插入到ul中，因为ul设置了宽度，小蜜蜂会自动换行
+            }
+            this.oUl=oUl;  //创建oUl属性为敌军整体DOM对象
+            this.aLi=oUl.getElementsByTagName('li');  //创建aLi属性为所有蜜蜂对象
+            /*布局转换：
+              将浮动布局转换为定位布局：
+              1、先就使用浮动布局
+              2、取出浮动布局中每个元素的offsetLeft和offsetTop值
+              3、将元素转换成定位布局
+              4、将offsetLeft和offsetTop赋值的left和top（转换后其实这两个值是对应关系）
+            */
+            for(var i=0;i<this.aLi.length;i++){
+                arr.push([this.aLi[i].offsetLeft,this.aLi[i].offsetTop]);
+            }
+            for(var i=0;i<this.aLi.length;i++){
+                this.aLi[i].style.position='absolute';
+                this.aLi[i].style.left=arr[i][0]+'px';
+                this.aLi[i].style.top=arr[i][1]+'px';
+            }
+            this.runEnemy(gk);  //敌军整体运动
+        },
+        runEnemy:function(gk){  //整体移动敌军，接受当前关卡数据
+            var This=this;
+            // 左右临界点的位置
+            var L=0;
+            var R=this.oParent.offsetWidth-this.oUl.offsetWidth;
+            this.oUl.timer=setInterval(function(){
+                if(This.oUl.offsetLeft>R){
+                    gk.iSpeedX*=-1;
+                    This.oUl.style.top=This.oUl.offsetTop+gk.iSpeedY+'px';
+                }else if(This.oUl.offsetLeft<L){
+                    gk.iSpeedX*=-1;
+                    This.oUl.style.top=This.oUl.offsetTop+gk.iSpeedY+'px';
+                }
+                This.oUl.style.left=This.oUl.offsetLeft+gk.iSpeedX+'px';
+            },200);
+            setInterval(function(){
+                This.oneMove();
+            },gk.times);
+        },
+        oneMove:function(){  //小蜜蜂一个个飞出来
+            var nowLi=this.aLi[Math.floor(Math.random()*this.aLi.length)];  //从蜂群中随机取出一个
+            var This=this;
+            nowLi.timer=setInterval(function(){
+                var a=(This.oA.offsetLeft+This.oA.offsetWidth/2)-(nowLi.offsetLeft+nowLi.offsetWidth/2+nowLi.parentNode.offsetLeft);  //通过飞机到左边的位置-小蜜蜂到左边的位置，得到小蜜蜂与飞机的水平偏移量
+                var b=(This.oA.offsetTop+This.oA.offsetHeight/2)-(nowLi.offsetTop+nowLi.offsetHeight/2+nowLi.parentNode.offsetTop);  //通过飞机到顶部的位置-小蜜蜂到顶部的位置，得到小蜜蜂与飞机的垂直偏移量
+                var c=Math.sqrt(a*a+b*b);  //通过勾股定理得到小蜜蜂到飞机的距离
+                var iSpeedX=nowLi.speed*a/c;  //计算出x轴上的移动速度
+                var iSpeedY=nowLi.speed*b/c;  //计算出y轴上的移动速度
+                nowLi.style.left=nowLi.offsetLeft+iSpeedX+'px';
+                nowLi.style.top=nowLi.offsetTop+iSpeedY+'px';
+                if(This.pz(This.oA,nowLi)){  //碰撞检测，撞到飞机游戏结束
+                    alert('游戏结束');
+                    window.location.reload();
+                }
+            },30);
+        },
+        createAir:function(){  //创建飞机
+            var oA=document.createElement('div');
+            oA.className=this.air.style;
+            this.oParent.appendChild(oA);
+            oA.style.left=(this.oParent.offsetWidth-oA.offsetWidth)/2+'px';
+            oA.style.top=this.oParent.offsetHeight-oA.offsetHeight+'px';
+            this.oA=oA;  //创建oA属性为飞机DOM对象
+            this.bindAir();
+        },
+        bindAir:function(){  //操作飞机
+            var t=null;
+            var iNum=0;  //方向，1为左，2为右
+            var This=this;
+            document.onkeydown=function(e){
+                var e=e||window.event;
+                //在键盘按下不放的时候，会卡一下，解决方法是使用定时器来手动触发
+                if(!t){
+                    t=setInterval(move,30);
+                }
+                if(e.keyCode==37){
+                    iNum=1;
+                }else if(e.keyCode==39){
+                    iNum=2;
+                }
+            };
+            document.onkeyup=function(e){
+                var e=e||window.event;
+                clearInterval(t);
+                t=null;
+                iNum=0;  //如果不重置为0，则按非左右键的时候由于iNum还保存着之前的方向值，所以还会移动
+                if(e.keyCode==32){
+                    This.createBullet();
+                }
+            }
+            // 移动飞机（还没限制范围）
+            function move(){
+                if(iNum==1){
+                    This.oA.style.left=This.oA.offsetLeft-10+'px';
+                }else if(iNum==2){
+                    This.oA.style.left=This.oA.offsetLeft+10+'px';
+                }
+            }
+        },
+        createBullet:function(){  //创建子弹
+            var oB=document.createElement('div');
+            oB.className=this.air.bulletStyle;
+            this.oParent.appendChild(oB);
+            oB.style.left=this.oA.offsetLeft+this.oA.offsetWidth/2+'px';
+            oB.style.top=this.oA.offsetTop-10+'px';
+            this.runBullet(oB);
+        },
+        runBullet:function(oB){  //子弹运动
+            var This=this;
+            oB.t=setInterval(function(){  //将定时器绑定到DOM对象上
+                // 子弹出屏幕则销毁子弹
+                if(oB.offsetTop<-10){
+                    clearInterval(oB.t);
+                    This.oParent.removeChild(oB);
+                }
+                oB.style.top=oB.offsetTop-10+'px';
+                // 判断是否击中蜜蜂，使用碰撞检测
+                for(var i=0;i<This.aLi.length;i++){
+                    if(This.pz(oB,This.aLi[i])){  //为true则碰上
+                        if(This.aLi[i].blood==1){  //如果只有1滴血，则击中后删除
+                            clearInterval(This.aLi[i].timer);  //击中的是飞下的蜜蜂，需要删掉它身上的定时器
+                            This.oSNum.innerHTML=parseInt(This.oSNum.innerHTML)+This.aLi[i].score;  //增加积分
+                            This.oUl.removeChild(This.aLi[i]);  //删除小蜜蜂
+                        }else{  //否则减1滴血
+                            This.aLi[i].blood--;
+                        }
+                        clearInterval(oB.t);  //清除子弹定时器
+                        This.oParent.removeChild(oB);  //删除子弹
+                    }
+                }
+                // 判断是否还有蜜蜂
+                if(!This.aLi.length){
+                    This.createEnemy(1);  //进入下一关
+                }
+            },30);
+        },
+        pz:function(obj1,obj2){  //碰撞检测，接收两个DOM元素，判断这两个元素是否相碰
+            // 获取obj1的上下左右距离
+            var L1=obj1.offsetLeft;
+            var R1=obj1.offsetLeft+obj1.offsetWidth;
+            var T1=obj1.offsetTop;
+            var B1=obj1.offsetTop+obj1.offsetHeight;
+            // 获取obj2的上下左右距离
+            // 这里的obj2是小蜜蜂，小蜜蜂是li在ul中，所以还需要加上ul的offset值才和子弹使用的同一参照物（游戏区域）
+            var L2=obj2.offsetLeft+obj2.parentNode.offsetLeft;
+            var R2=obj2.offsetLeft+obj2.offsetWidth+obj2.parentNode.offsetLeft;
+            var T2=obj2.offsetTop+obj2.parentNode.offsetTop;
+            var B2=obj2.offsetTop+obj2.offsetHeight+obj2.parentNode.offsetTop;
+            // 判断是否相碰
+            if(R1<L2||L1>R2||B1<T2||T1>B2 ){  //全部为false则没碰上
+                return false;
+            }else{  //只要有一个为true则碰上了
+                return true;
+            }
+        }
+    }
+    </script>
+</body>
+</html>
