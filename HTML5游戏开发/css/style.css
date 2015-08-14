@@ -1,0 +1,44 @@
+body,div,section,span{margin:0px;padding:0px;}
+body{font-family:'微软雅黑';}
+
+/*首页*/
+section{width:100%;height:100%;position:relative;}
+.bgColor{background-color:#2d4081;}
+/*圆环，大小为最内部的那个圆，扩展的圆环是通过box-shadow绘制的*/
+/*定位到中心是使用top:50%,left:50%将原点定位到中心，再通过margin的top和left设置负值，为高和宽的一半*/
+.Bg-page1{width:429px;height:429px;border:1px solid #1f2b57;background-color:#233264;position:absolute;top:50%;left:50%;margin:-214px 0 0 -214px;border-radius:50%;box-shadow:0 0 0 113px #283972,0 0 0 114px #223161,0 0 0 193px #2a3d79,0 0 0 254px #2c3f7e,0 0 0 255px #2a3c79;}
+.bg-star{width:100%;height:100%;background:url(../images/bg-star.png) no-repeat;background-size:cover;position:absolute;}
+.main_page1{width:429px;height:429px;position:absolute;top:50%;left:50%;margin:-214px 0 0 -214px;}
+.main_page1 .rocket{width:165px;height:195px;position:absolute;top:-29px;left:48px;background:url(../images/rocket.png) no-repeat;opacity:0;}
+.main_page1 .thanks{width:399px;height:228px;position:absolute;top:43px;left:38px;background:url(../images/thanks.png) no-repeat;opacity:0;}
+.main_page1 .widthyou{width:364px;height:134px;position:absolute;top:208px;left:38px;background:url(../images/widthyou.png) no-repeat;opacity:0;}
+.main_page1 .miaov{width:193px;height:82px;position:absolute;top:-7px;left:209px;background:url(../images/miaov.png) no-repeat;opacity:0;}
+.arrow{width:90px;height:65px;position:absolute;left:50%;bottom:40px;margin-left:-45px;background:url(../images/arrow.png) no-repeat;animation:arrow 1s infinite;-webkit-animation:arrow 1s infinite;}
+
+/*控制动画播放：将动画提取出来挂载到section.sectionIn下，用JS给section添加class=sectionIn后动画才开始执行*/
+section.sectionIn .main_page1 .rocket{animation:rocket 1s;-webkit-animation:rocket 1s;opacity:1;}
+section.sectionIn .main_page1 .thanks{animation:thanks 1s;-webkit-animation:thanks 1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}
+section.sectionIn .main_page1 .widthyou{animation:widthyou 1s;-webkit-animation:widthyou 1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}
+section.sectionIn .main_page1 .miaov{animation:miaov 1s;-webkit-animation:miaov 1s;animation-delay:1s;-webkit-animation-delay:1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}  /*使用animation-delay进行延迟，实现动画逐一运行的效果；使用animation-fill-mode:forwards让动画停到最后一帧的状态，避免opacity变为初始值0*/
+/*首页退出动画*/
+section.sectionOut .Bg-page1{animation:circleOut 1s;-webkit-animation:circleOut 1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}
+section.sectionOut .bg-star{animation:starOut 1s;-webkit-animation:starOut 1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;}
+section.sectionOut .main_page1 .rocket{animation:rocketOut 1s forwards;-webkit-animation:rocketOut 1s forwards;opacity:1;}
+section.sectionOut .main_page1 .thanks{animation:thanksOut 1s;-webkit-animation:thanksOut 1s;animation-delay:0.2s;-webkit-animation-delay:0.2s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;opacity:1;}
+section.sectionOut .main_page1 .widthyou{animation:widthyouOut 1s;-webkit-animation:widthyouOut 1s;animation-delay:0.3s;-webkit-animation-delay:0.3s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;opacity:1;}
+section.sectionOut .main_page1 .miaov{animation:miaovOut 1s;-webkit-animation:miaovOut 1s;animation-delay:0.1s;-webkit-animation-delay:0.1s;animation-fill-mode:forwards;-webkit-animation-fill-mode:forwards;opacity:1;}
+
+/*音乐播放*/
+.music{width:50px;height:47px;position:absolute;bottom:10px;right:10px;}
+.musicRun{background:url(../images/run.png) no-repeat;animation:run 3s linear infinite;-webkit-animation:run 3s linear infinite;}
+.musicStop{background:url(../images/stop.png) no-repeat;}
+
+/*进度条*/
+.jindu{width:463px;height:28px;border:1px solid #4091dc;border-radius:14px;position:absolute;bottom:119px;left:50%;margin-left:-231px;}
+.jindu span{width:0%;height:28px;display:block;background:#4091dc;border-radius:14px;}
+
+/*游戏*/
+.bg-game{width:100%;height:100%;background:url(../images/bg-game.png) no-repeat;background-size:cover;position:absolute;}
+.typeBar{width:100%;height:73px;background:rgba(0,0,0,0.4);position:absolute;bottom:0;z-index:9;}
+.typeBar .score{width:263px;height:100%;float:left;background:url(../images/monster4.png) 23px 18px no-repeat;background-size:59px 51px;text-indent:82px;line-height:73px;font-size:30px;color:#55b9f8;}  /*使用背景图片直接设置位置，而没使用margin；使用background-size设置背景图大小，文字使用text-indent缩进*/
+.typeBar .time{width:180px;height:100%;float:left;background:url(../images/time.png) 0px 16px no-repeat;text-indent:56px;font-size:30px;color:#ffe400;line-height:73px;}

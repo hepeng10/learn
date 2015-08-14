@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=640,user-scalable=no,target-densityDpi=device-dpi">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/animation.css">
+    <script src="js/lex.js"></script>
+    <script src="js/jCanvaScript.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <!-- 微信朋友圈分享 -->
+    <script>
+    window.addEventListener('load', function() {
+
+        var wxApiList = [
+            "onMenuShareTimeline",
+            "onMenuShareAppMessage",
+            "onMenuShareQQ",
+            "onMenuShareWeibo",
+            "startRecord",
+            "stopRecord",
+            "onVoiceRecordEnd",
+            "playVoice",
+            "pauseVoice",
+            "stopVoice",
+            "onVoicePlayEnd",
+            "uploadVoice",
+            "downloadVoice",
+            "chooseImage",
+            "previewImage",
+            "uploadImage",
+            "downloadImage",
+            "translateVoice",
+            "getNetworkType",
+            "openLocation",
+            "getLocation",
+            "hideOptionMenu",
+            "showOptionMenu",
+            "hideMenuItems",
+            "showMenuItems",
+            "hideAllNonBaseMenuItem",
+            "showAllNonBaseMenuItem",
+            "closeWindow",
+            "scanQRCode",
+            "chooseWXPay",
+            "openProductSpecificView",
+            "addCard",
+            "chooseCard",
+            "openCard"
+        ];
+
+        var shareData = {
+            title : '妙味VIP会员打怪游戏',
+            link : 'http://v.miaov.com/game/index.html',
+            imgUrl : 'http://v.miaov.com/game/images/share-icon_01.png',
+            desc : '妙味VIP会员邀请你参加打击“盗版怪物”游戏',
+            type : '',
+            dataUrl : '',
+            successCallback : function() {
+                alert("邀请成功！感谢“棒棒哒”你~ ^_^");
+            },
+            cancelCallback: function(){
+                alert("别嘛！不嘛！！邀请你的朋友来玩一玩嘛~！");
+            }
+        };
+
+        wx.config({
+            appId: 'wx3b79ed46a6f659ca',
+            timestamp: 1439364778,
+            nonceStr: 'Qed5iwyRVAJlb4OZ',
+            signature: 'e7ce9ff3a24d8bd68a665d78a9c01d149538890b',
+            jsApiList: wxApiList
+        });
+
+        wx.ready(function () {
+
+            
+            //分享接口
+            
+            //分享到QQ
+            wx.onMenuShareQQ({
+                title : shareData.title,
+                desc : shareData.desc,
+                link : shareData.link,
+                imgUrl : shareData.imgUrl,
+                success : shareData.successCallback,
+                cancel: shareData.cancelCallback
+            });
+            //分享到朋友圈
+            wx.onMenuShareTimeline({
+                title: shareData.title,
+                link: shareData.link,
+                imgUrl: shareData.imgUrl,
+                success : shareData.successCallback,
+                cancel: shareData.cancelCallback
+            });
+            //分享给朋友
+            wx.onMenuShareAppMessage({
+                title: shareData.title,
+                desc : shareData.desc,
+                link: shareData.link,
+                imgUrl: shareData.imgUrl,
+                type: shareData.type,
+                dataUrl: shareData.dataUrl,
+                success : shareData.successCallback,
+                cancel: shareData.cancelCallback
+            });
+            //分享到微博
+            wx.onMenuShareWeibo({
+                title: shareData.title, // 分享标题
+                desc: shareData.desc, // 分享描述
+                link: shareData.link, // 分享链接
+                imgUrl: shareData.imgUrl, // 分享图标
+                success : shareData.successCallback,
+                cancel: shareData.cancelCallback
+            });
+        });
+
+    })
+    </script>
+</head>
+
+<body class="bgColor">
+    <div class="Bg-page1"></div>
+    <!-- 背景 -->
+    <div class="bg-game"></div>
+    <!-- 游戏 -->
+    <canvas id="game" style="position:absolute;z-index:3;"></canvas>
+    <!-- 底部状态栏 -->
+    <div class="typeBar">
+        <div class="score">X100</div>
+        <div class="time">10秒</div>
+        <!-- 音乐 -->
+        <div class="music musicRun" id="music">
+            <!-- 微信中屏蔽了自动播放 -->
+            <!-- <audio src="./audio/bg.mp3" preload="auto" autoplay="true"></audio> -->
+        </div>
+    </div>
+
+    <script>
+    // 游戏主体：使用了jCanvaScript库来绘制canvas
+    function gamePage(){
+        id('game').width=view().w;
+        id('game').height=view().h;
+        var _this=this;
+        // 创建怪物封装
+        _this.monster={
+            // 接收JSON对象，包含canvas元素的ID：{canvas:'game'}
+            mon1:function(option){
+                var img=new Image();
+                img.src="./images/monster1.png";
+                img.onload=function(){
+                    // 开始绘制canvas，接收canvas标签的id值；第二个参数需要传入true才能接着调用动画效果
+                    jc.start(option.canvas,true);
+                    // 将图片绘制进canvas中，设置坐标和图片的宽高；使用id()给这个canvas元素指定id
+                    jc.image(img,-100,-100,109,114).id(option.id);
+                    // alert(jc('#'+option.id).id());
+                    jc.start(option.canvas,true);
+                }
+            },
+            mon2:function(option){
+                var img=new Image();
+                img.src="./images/monster2.png";
+                img.onload=function(){
+                    jc.start(option.canvas,true);
+                    jc.image(img,-100,-100,109,113).id(option.id);
+                    jc.start(option.canvas,true);
+                }
+            },
+            mon3:function(option){
+                var img=new Image();
+                img.src="./images/monster3.png";
+                img.onload=function(){
+                    jc.start(option.canvas,true);
+                    jc.image(img,-100,-100,107,129).id(option.id);
+                    jc.start(option.canvas,true);
+                }
+            },
+            mon4:function(option){
+                var img=new Image();
+                img.src="./images/monster4.png";
+                img.onload=function(){
+                    jc.start(option.canvas,true);
+                    jc.image(img,-100,-100,125,110).id(option.id);
+                    jc.start(option.canvas,true);
+                }
+            }
+        };
+        // 关卡限制时间；暂时是所以关卡都限制10s
+        _this.time=[10];
+        // 每个关卡怪物数量：[1,2,2,3,3,3]表示第1关1个怪物，2=2，3=2，4=2，5=3...
+        _this.arrNum=[];
+        var num=1;  //怪物数量初始值
+        // 给每个关卡设置怪物数量；生成[1,2,2,3,3,3,4,4,4,4...]
+        function createNum(){
+            for(var i=0;i<num;i++){
+                _this.arrNum.push(num);
+            }
+            num++;
+            if(num<20){
+                createNum();
+            }
+        }
+        createNum();
+        _this.passNum=0;  //初始化当前关卡数
+        // 设置怪物移动路径
+        _this.MinX=50;
+        _this.MinY=50;
+        _this.MaxX=view().w-50;
+        _this.MaxY=view().h-50;
+        _this.roundT=10000;  //绕屏幕一圈的时间
+        _this.speed=30;  //绕屏幕一圈的速度
+        // 创建怪物
+        function createMonster(){
+            for(var i=0;i<_this.arrNum[_this.passNum];i++){
+                // 调用的lex.js中封装的生成随机数函数
+                var mon=getNum({min:1,max:4,num:1})[0];
+                // 从4种怪物中随机创建一个，id通过这样的组合可以实现不重复
+                _this.monster['mon'+mon]({canvas:'game',id:'mon'+_this.passNum+i});
+                var monM=new monMove({obj:'mon'+_this.passNum+i});
+            }
+        }
+        createMonster();
+        // 怪物运动，接收这个怪物的id
+        function monMove(option){
+            var _that=this;
+            _that.obj=option.obj;
+            // 计算出怪物自身圆周运动的速度
+            _that.changeNum=((_this.MaxX-_this.MinX)+(_this.MaxY-_this.MinY))*2/(_this.roundT/_this.speed)
+            // 初始化怪物位置，4条边随机取出1条
+            var firstPositionArea=getNum({min:1,max:4,num:1})[0];
+            switch(firstPositionArea){
+                case 1:  //上：X轴随机取出一个点，Y轴固定（50）
+                    _that.X=getNum({min:_this.MinX,max:_this.MaxX,num:1})[0];
+                    _that.Y=_this.MinY;
+                    break;
+                case 2:  //左
+                    _that.X=_this.MinX;
+                    _that.Y=getNum({min:_this.MinY,max:_this.MaxY,num:1})[0];
+                    break;
+                case 3:  //下
+                    _that.X=getNum({min:_this.MinX,max:_this.MaxX,num:1})[0];
+                    _that.Y=_this.MaxY;
+                    break;
+                case 4:  //悠
+                    _that.X=_this.MaxX;
+                    _that.Y=getNum({min:_this.MinY,max:_this.MaxY,num:1})[0];
+                    break;
+            }
+        }
+        monMove.prototype.run=function(){
+            var _that=this;
+            if(_that.X<_this.MaxX&&_that.Y==_this.MinY&&_that.X>_this.MinX){
+                _that.X-=_that.changeNum;
+                if(_that.x<_this.MinX){
+                    _that.X=_this.MinX;
+                }
+            }
+        }
+    }
+    gamePage();
+
+    // 音乐播放
+    function musicShow(){
+        var music=id('music');
+        var au=music.getElementsByTagName('audio')[0];
+        bind(music,'touchstart',function(){
+            console.log(1)
+            if(au.paused){  //判断音乐是否暂停
+                au.play();
+                removeClass(music,'musicStop');
+                addClass(music,'musicRun');
+            }else{
+                au.pause();
+                removeClass(music,'musicRun');
+                addClass(music,'musicStop');
+            }
+        });
+    }
+    musicShow();
+    </script>
+</body>
+</html>

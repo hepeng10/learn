@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=640,user-scalable=no">
+    <title>Snake</title>
+    <style>
+    body,canvas{margin:0;padding:0;background:black;}
+    #score{margin:40px auto;color:white;font-size:40px;z-index:10;text-align:center;}
+    #start{color:white;width:620px;text-align:center;height:620px;border:2px solid white;position:absolute;z-index:5;top:50%;margin-left:7px;margin-top:-310px;}
+    #info{font-size:40px;margin-top:100px;}
+    #difficulty{font-size:40px;margin-top:50px;}
+    #difficulty span{margin-top:50px;display:inline-block;border:2px solid #ccc;width:50%;height:50px;line-height:50px;}
+    </style>
+</head>
+<body>
+    <div id="score">Score:<span>0</span></div>
+    <div id="start">
+        <div id="info">上下左右划动改变方向</div>
+        <div id="difficulty">
+            <span class="button">简单</span><br>
+            <span class="button">一般</span><br>
+            <span class="button">困难</span><br>
+        </div>
+    </div>
+    <canvas id="game" style="position:absolute;"></canvas>
+
+    <script src="./map.js"></script>
+    <script src="./food.js"></script>
+    <script src="./snake.js"></script>
+
+    <script>
+    // 阻止浏览器默认划屏事件
+    document.addEventListener('touchmove',function(e){
+        e.preventDefault();
+    });
+    var game,cxt,map,snake,food;  //设置全局变量，方便使用
+    var oScore=document.getElementById('score').getElementsByTagName('span')[0];
+    var aSpan=document.getElementById('difficulty').getElementsByTagName('span');
+    var oStart=document.getElementById('start');
+    // 给每个难度按钮绑定开始游戏事件
+    for(var i=0;i<aSpan.length;i++){
+        (function(i){
+            aSpan[i].addEventListener('touchstart',function(){
+                oStart.style.marginTop="-3000px";
+                start(i);
+            },false);
+        })(i);
+    }
+    // 开始游戏，传入难度
+    function start(dif){
+        oScore.innerHTML=0;
+        game=document.getElementById('game');
+        game.width=640;
+        game.height=640;
+        // game.style.background="red"
+        game.style.top="50%";
+        game.style.marginTop="-320px";
+        cxt=game.getContext('2d');
+        // 绘制地图
+        map=new Map(cxt,dif);
+        map.draw();
+        // 绘制蛇
+        snake=new Snake(cxt,dif);
+        snake.init();
+        // 创建食物
+        food=new Food(cxt);
+        food.create();
+    }
+    // 结束游戏后重新载入开始游戏界面
+    function reStart(){
+        cxt.clearRect(0,0,640,640);
+        oStart.style.marginTop="-310px";
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=640,user-scalable=no,target-densityDpi=device-dpi">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/animation.css">
+</head>
+<body>
+    <section class="bgColor sectionIn">
+        <div class="Bg-page1"></div>
+        <div class="bg-star"></div>
+        <div class="main_page1">
+            <div class="rocket"></div>
+            <div class="miaov"></div>
+            <div class="thanks"></div>
+            <div class="widthyou"></div>
+        </div>
+        <div class="arrow"></div>
+        <div class="jindu"><span id="jindu"></span></div>
+    </section>
+    <!-- 音乐 -->
+    <div class="music musicRun" id="music">
+        <!-- 微信中屏蔽了自动播放 -->
+        <audio src="./audio/bg.mp3" preload="auto" autoplay="true"></audio>
+    </div>
+
+    <script src="js/lex.js"></script>
+    <script>
+    document.body.style.height=view().h+'px';
+    // 页面切换
+    function changePage(){
+        var section=document.getElementsByTagName('section');
+        var pageDown=0;
+        bind(document,'touchstart',function(e){
+            var e=e||event;
+            pageDown=e.changedTouches[0].pageY;
+        });
+        bind(document,'touchend',function(e){
+            var e=e||event;
+            var pageUp=e.changedTouches[0].pageY;
+            if(pageUp-pageDown>100){  //向下划
+                
+            }else if(pageUp-pageDown<-100){  //向上划
+                removeClass(section[0],'sectionIn');
+                addClass(section[0],'sectionOut');
+            }
+        });
+    }
+    changePage();
+    // 音乐播放
+    function musicShow(){
+        var music=id('music');
+        var au=music.getElementsByTagName('audio')[0];
+        bind(music,'touchstart',function(){
+            if(au.paused){  //判断音乐是否暂停
+                au.play();
+                removeClass(music,'musicStop');
+                addClass(music,'musicRun');
+            }else{
+                au.pause();
+                removeClass(music,'musicRun');
+                addClass(music,'musicStop');
+            }
+        });
+    }
+    musicShow();
+    // 进度条：每张图片加载完，让计数器+1，通过计数器设置进度条长度
+    var arrImg=[
+        './images/arrow.png',
+        './images/bg-star.png',
+        './images/miaov.png',
+        './images/rocket.png',
+        './images/thanks.png',
+        './images/widthyou.png'
+    ];
+    var loadNum=0;
+    for(var i=0;i<arrImg.length;i++){
+        // var aImg=document.createElement('img');  使用new Image是一样的
+        var aImg=new Image();
+        aImg.src=arrImg[i];
+        aImg.onload=function(){  //每张图片加载完成计数器+1
+            loadNum++;
+            // 设置进度条长度
+            id('jindu').style.width=Math.floor(loadNum/arrImg.length)*100+'%';
+            if(loadNum==arrImg.length){
+                remove(id('jindu').parentNode);
+            }
+        }
+    }
+    </script>
+</body>
+</html>
