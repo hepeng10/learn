@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        #div1{width:300px;height:300px;position:absolute;background:red;}
+        #div2{width:30px;height:30px;background:yellow;position:absolute;right:0;bottom:0;}
+    </style>
+</head>
+<body>
+    <div id="div1">
+        <div id="div2"></div>
+    </div>
+
+    <script type="text/javascript">
+    var oDiv1=document.getElementById('div1');
+    var oDiv2=document.getElementById('div2');
+    var disX=0;
+    var disY=0;
+    var disW=0;
+    var disH=0;
+    oDiv2.onmousedown=function(e){
+        var e=e||window.event;
+        disX=e.clientX;
+        disY=e.clientY;
+        disW=oDiv1.offsetWidth;
+        disH=oDiv1.offsetHeight;
+        // 拖动的时候不断改变div1的宽高
+        document.onmousemove=function(e){
+            var e=e||window.event;
+            // 鼠标当前的坐标减去之前的坐标得到变化的宽高，变化的宽高加上原始宽高得到变化后的宽高
+            var W=e.clientX-disX+disW;
+            var H=e.clientY-disY+disY;
+            // 进行最小宽高限制
+            if (W<100) {
+                W=100;
+            }
+            if(H<100){
+                H=100;
+            }
+            oDiv1.style.width=W+'px';
+            oDiv1.style.height=H+'px';
+            if (W<100) {
+                W=100;
+            };+'px'
+            if(H<100){
+                H=100;
+            }
+        }
+        document.onmouseup=function(e){
+            document.onmousemove=null;
+            document.onmouseup=null;
+        }
+    }
+    </script>
+</body>
+</html>
