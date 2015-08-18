@@ -227,7 +227,7 @@
             var _that=this;
             _that.obj=option.obj;
             // 计算出怪物自身圆周运动的速度
-            _that.changeNum=((_this.MaxX-_this.MinX)+(_this.MaxY-_this.MinY))*2/(_this.roundT/_this.speed)
+            _that.changeNum=((_this.MaxX-_this.MinX)+(_this.MaxY-_this.MinY))*2/(_this.roundT/_this.speed);
             // 初始化怪物位置，4条边随机取出1条
             var firstPositionArea=getNum({min:1,max:4,num:1})[0];
             switch(firstPositionArea){
