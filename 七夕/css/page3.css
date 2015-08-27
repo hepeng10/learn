@@ -1,0 +1,100 @@
+/*背景图*/
+.c_background{width:100%;height:100%;bakcground-size:100% 100%;position:absolute;}
+.c_background_top{width:100%;height:71.6%;background-image:url(../img/c_background_top.png);background-size:100% 100%;}
+.c_background_middle{width:100%;height:13.1%;background-image:url(../img/c_background_middle.png);background-size:100% 100%;}
+.c_background_bottom{width:100%;height:15.3%;background-image:url(../img/c_background_bottom.png);background-size:100% 100%;}
+
+/*小女孩*/
+.girl{background:url(../img/girl.png) -755px -0px no-repeat;position:absolute;right:40%;top:37%;width:151px;height:291px;}
+.girl-rotate{animation-name:girl-rotate;animation-duration:850ms;animation-iteration-count:1;animation-timing-function:step-start;animation-fill-mode:forwards;}
+
+/*桥*/
+.bridge-bottom{position:absolute;width:41%;height:24%;left:29.5%;top:76%;overflow:hidden;}
+
+/*波浪布局*/
+.water{width:100%;height:100%;}
+/*这里animation使用了alternate属性，当动画到达终点时反方向执行*/
+.water_1,.water_2,.water_3,.water_4{width:100%;height:50%;position:absolute;animation-name:shake;animation-duration:40s;animation-direction:alternate;animation-timing-function:linear;animation-iteration-count:infinite;}
+.water_1{width:131px;height:15px;top:13%;left:35%;background:url(../img/water_1.png) -261px -0px no-repeat;}
+/*给不同的水波设置了不同的延迟*/
+.water_2{width:161px;height:9px;top:30%;left:45%;background:url(../img/water_2.png) -693px -0px no-repeat;animation-delay:2s;}
+.water_3{width:261px;height:29px;top:50%;left:15%;background:url(../img/water_3.png) -0px -0px no-repeat;animation-delay:1s;}
+.water_4{width:301px;height:12px;top:75%;left:30%;background:url(../img/water_4.png) -392px -0px no-repeat;animation-delay:3s;}
+
+/*星星*/
+.stars{width:100%;height:100%;position:absolute;}
+.stars>li{position:absolute;width:30px;height:31px;background-image:url(../img/stars_li.png);animation:flash 5s ease-in-out infinite alternate ;}
+.stars1{top:20%;left:30%;}
+.stars2{top:15%;left:20%;}
+.stars3{top:25%;left:85%;}
+.stars4{top:30%;left:70%;}
+.stars5{top:25%;left:20%;}
+.stars6{top:10%;left:65%;}
+
+/*慕课网文字*/
+.logo{width:185px;height:81px;background-image:url(../img/logo.png);z-index:999;position:absolute;left:50%;margin-left:-92.5px;top:30px;display:none;}
+.logoIn{display:block;animation-name:logoIn;animation-timing-function:ease-out;animation-duration:1s;}
+.logoshake{animation-name:logoshake;animation-duration:0.5s;}
+
+/*飘花*/
+#flower{width:100%;height:100%;position:absolute;top:0;left:0;overflow:hidden}
+.flowerRoll{position:absolute;opacity:0;height:80px;animation-name:flower;animation-duration:20s;}
+
+
+
+/*动画*/
+/*波浪左右动*/
+@keyframes shake{
+    0%,100%{transform:translate3d(0,0,0);}
+    10%,30%,50%,70%,90%{transform:translate3d(-30px,0,0);}
+    20%,40%,60%,80%{transform:translate3d(30px,0,0);}
+}
+/*星星闪*/
+@keyframes flash{
+    0%,50%,100%{opacity:1;}
+    25%,75%{opacity:0;}
+}
+/*小女孩转身*/
+@keyframes girl-rotate{
+    0% {
+        background-position: -604px -0px;
+    }
+    16.7% {
+        background-position: -151px -0px;
+    }
+    33.4% {
+        background-position: -906px -0px;
+    }
+    50.1% {
+        background-position: -0px -0px;
+    }
+    66.8% {
+        background-position: -302px -0px;
+    }
+    83.5% {
+        background-position: -453px -0px;
+    }
+    100% {
+        background-position: -604px -0px;
+    }
+}
+/*慕课网文字进入*/
+@keyframes logoIn{
+    /*skewX来使图片倾斜变形*/
+    0%{transform:translate3d(100%,0,0) skewX(-30deg);opacity:0;}
+    60%{transform:skewX(20deg);opacity:1}
+    80%{transform:skewX(-5deg);}
+    100%{transform:none;}
+}
+/*慕课网文字左右晃动*/
+@keyframes logoshake{
+    0%,100%{transform:translate3d(0,0,0)}
+    10%,30%,50%,70%,90%{transform:translate3d(-5px,0,0);}
+    20%,40%,60%,80%{transform:translate3d(10px,0,0);}
+}
+/*飘花*/
+@keyframes flower{
+    0%{bottom:100%;}
+    50%{transform:rotate(1080deg);}
+    100%{transform:rotate(0deg) translate3d(50px 50px 50px);}
+}
