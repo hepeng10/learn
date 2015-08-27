@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    *{margin:0;padding:0;border:0;}
+    #div1{width:210px;height:210px;background:url(./1.jpg) no-repeat;position:absolute;}
+    </style>
+</head>
+<body>
+    按下移动的时候会不断的触发move事件，每次触发会得到一个鼠标的坐标。通过up的时候最后两个坐标的差值就能得到出手时的速度
+    <div id="div1"></div>
+
+    <script type="text/javascript">
+    // setCapture()：全局捕获（生成一个透明层：可视区大小）
+    // releaseCapture()：释放全局捕获（删除透明层）
+    var oDiv=document.getElementById('div1');
+    var disX=0;  //鼠标到元素原点的距离
+    var disY=0;
+    var prevX=0;  //保存出手时的前一个点坐标
+    var prevY=0;
+    var iSpeedX=0;  //出手时的速度
+    var iSpeedY=0;
+    var timer=null;
+    oDiv.onmousedown=function(e){
+        var e=e||window.event;
+        disX=e.clientX-oDiv.offsetLeft;
+        disY=e.clientY-oDiv.offsetTop;
+        prevX=e.clientX;
+        prevY=e.clientY;
+        clearInterval(timer);  //按下的时候要清除定时器，不然在小球运动过程中再去拖拽，会既有拖拽运动又有小球自身的运动，导致冲突BUG
+        // 先进行浏览器兼容判断
+        if(oDiv.setCapture){
+            oDiv.setCapture();  //创建全局捕获
+        }
+        document.onmousemove=function(e){
+            var e=e||window.event;
+            oDiv.style.left=e.clientX-disX+'px';  
+            oDiv.style.top=e.clientY-disY+'px';
+            // 在移动过程中不断的更新速度，由于直接相减的值比较小，所以*5来提高速度
+            iSpeedX=(e.clientX-prevX)*5;
+            iSpeedY=(e.clientY-prevY)*5;
+            prevX=e.clientX;
+            prevY=e.clientY;
+        }
+        document.onmouseup=function(){
+            document.onmousemove=null; 
+            document.onmouseup=null;
+            // 必须释放全局捕获，不然透明层一直存在，就无法操作页面了
+            if(oDiv.releaseCapture){
+                oDiv.releaseCapture();
+            }
+            startMove();
+        }
+        return false;
+        // 出手时开始移动
+        function startMove(){
+            clearInterval(timer);
+            timer=setInterval(function(){
+                iSpeedY+=3;  //为了让球往下落，定时器每次运行的时候让Y轴的速度+3，模拟重力加速度
+                var L=oDiv.offsetLeft+iSpeedX;
+                var T=oDiv.offsetTop+iSpeedY;
+                // 边缘碰撞检测
+                if(L<0){
+                    L=0;
+                    iSpeedX*=-1;
+                    iSpeedX*=0.75;  //碰到边缘就进行一次速度损耗，模拟摩擦系数
+                }else if(L>document.documentElement.clientWidth-oDiv.offsetWidth){
+                    L=document.documentElement.clientWidth-oDiv.offsetWidth;
+                    iSpeedX*=-1;
+                    iSpeedX*=0.75;
+                }
+                if(T<0){
+                    T=0;
+                    iSpeedY*=-1;
+                    iSpeedY*=0.75;
+                }else if(T>document.documentElement.clientHeight-oDiv.offsetHeight){
+                    T=document.documentElement.clientHeight-oDiv.offsetHeight;
+                    iSpeedY*=-1;
+                    iSpeedY*=0.75;
+                    iSpeedX*=0.75;
+                }
+                // 当速度小于一定的值，则判断它停下了，清除定时器
+                if(Math.abs(iSpeedX)<1.5&&Math.abs(iSpeedY)<1.5){
+                    clearInterval(timer);
+                }
+                oDiv.style.left=L+'px';
+                oDiv.style.top=T+'px';
+            },30);
+        }
+    }
+    </script>
+</body>
+</html>

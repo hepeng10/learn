@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        /*需要使用绝对定位*/
+        #div1{width:210px;height:210px;background:url(./1.jpg) no-repeat;position:absolute;}
+    </style>
+</head>
+<body>
+    拖拽三大事件：onmousedown、onmousemove、onmouseup
+    <div id="div1"></div>
+
+    <script type="text/javascript">
+    var oDiv=document.getElementById('div1');
+    // 用来保存鼠标按下位置到元素左边和上边的距离
+    var disX=0;
+    var disY=0;
+    oDiv.onmousedown=function(e){
+        var e=e||window.event;
+        disX=e.clientX-oDiv.offsetLeft;  //通过鼠标到浏览器左边的距离，减去元素到浏览器左边的距离，得到鼠标到元素左边的距离
+        disY=e.clientY-oDiv.offsetTop;
+        // 当鼠标在oDiv上按下后才触发mousemove，所以这个事件绑定写在oDiv.onmousedown里面；这个事件是鼠标移动过程中每隔很短时间自动触发一次，并不是鼠标每移动一个像素触发一次；由于是间隔事件触发，如果速度太快，在未触发的时候鼠标就移出了div，则会导致div不能跟随鼠标移动，所以事件需要绑定到document上（利用事件冒泡）
+        document.onmousemove=function(e){
+            var e=e||window.event;
+            oDiv.style.left=e.clientX-disX+'px';  //鼠标到浏览器左边的距离，减去鼠标到元素左边的距离，得到元素到浏览器左边的距离
+            oDiv.style.top=e.clientY-disY+'px';
+        }
+        document.onmouseup=function(){
+            document.onmousemove=null;  //鼠标抬起清空mousemove事件，不清空则div还会跟着鼠标走
+            document.onmouseup=null;  //将mouseup也清空
+        }
+    }
+    </script>
+</body>
+</html>

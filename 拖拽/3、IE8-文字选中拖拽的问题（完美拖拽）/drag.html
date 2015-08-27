@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        /*需要使用绝对定位*/
+        #div1{width:210px;height:210px;background:url(./1.jpg) no-repeat;position:absolute;}
+    </style>
+</head>
+<body>
+    IE8-的浏览器中，在img上使用return false阻止默认事件没用，并且选中里拖拽元素内的文本后进行拖拽也没用，会触发文本的拖拽行为，这里就需要使用IE的setCapture方法，在元素上面生成一个透明层，在拖拽的时候就不会拖到里面的元素了
+    <div id="div1">
+        1111111111111111111111111
+        <img src="./1.jpg" alt="">
+    </div>
+
+    <script type="text/javascript">
+    // setCapture()：全局捕获（生成一个透明层：可视区大小）
+    // releaseCapture()：释放全局捕获（删除透明层）
+    var oDiv=document.getElementById('div1');
+    var disX=0;
+    var disY=0;
+    oDiv.onmousedown=function(e){
+        var e=e||window.event;
+        disX=e.clientX-oDiv.offsetLeft;
+        disY=e.clientY-oDiv.offsetTop;
+        // 先进行浏览器兼容判断
+        if(oDiv.setCapture){
+            oDiv.setCapture();  //创建全局捕获
+        }
+        document.onmousemove=function(e){
+            var e=e||window.event;
+            oDiv.style.left=e.clientX-disX+'px';  
+            oDiv.style.top=e.clientY-disY+'px';
+        }
+        document.onmouseup=function(){
+            document.onmousemove=null; 
+            document.onmouseup=null;
+            // 必须释放全局捕获，不然透明层一直存在，就无法操作页面了
+            if(oDiv.releaseCapture){
+                oDiv.releaseCapture();
+            }
+        }
+        return false;
+    }
+    </script>
+</body>
+</html>

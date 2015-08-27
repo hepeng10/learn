@@ -55,7 +55,7 @@ Jong.prototype.move=function(){
         // 当a和b都等于0，则到达终点，不再执行里面的代码进行运动
         if(Math.abs(a)>0||Math.abs(b)>0){
             var c=Math.ceil(Math.sqrt(a*a+b*b));  //勾股定理得出触摸点到JONG的直线距离
-            var iSpeedX=Math.floor(this.speed*a/c);  //得到x轴的速度
+            var iSpeedX=Math.floor(this.speed*a/c);  //通过等比关系得到x轴的速度：cSpeed/c=aSpeed/a得到aSpeed=cSpeed/c*a
             var iSpeedY=Math.floor(this.speed*b/c);  //得到y轴的速度
             // 定时器每次调用修改JONG的坐标
             this.x+=iSpeedX;

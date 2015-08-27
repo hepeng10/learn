@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    #div1{width:100px;height:100px;background:red;position:absolute;}
+    </style>
+</head>
+<body>
+    <div id="div1"></div>
+
+    <script type="text/javascript">
+    var oDiv=document.getElementById('div1');
+    startMove();
+    var iSpeedX=10;
+    var iSpeedY=10;
+    function startMove(){
+        setInterval(function(){
+            // 取得变化后的值
+            var L=oDiv.offsetLeft+iSpeedX;
+            var T=oDiv.offsetTop+iSpeedY;
+            // 碰到下边缘：当top值>可视区的高-自身高，改变Y坐标运动方向
+            if(T>document.documentElement.clientHeight-oDiv.offsetHeight){
+                T=document.documentElement.clientHeight-oDiv.offsetHeight;
+                iSpeedY*=-1;
+            }else if(T<0){  //碰到上边缘
+                T=0;
+                iSpeedY*=-1;
+            }else if(L>document.documentElement.clientWidth-oDiv.offsetWidth){  //碰到右边缘
+                L=document.documentElement.clientWidth-oDiv.offsetWidth;
+                iSpeedX*=-1;
+            }else if(L<0){  //碰到左边缘
+                L=0;
+                iSpeedX*=-1;
+            }
+            oDiv.style.left=L+'px';
+            oDiv.style.top=T+'px';
+        },50);
+    }
+    </script>
+</body>
+</html>

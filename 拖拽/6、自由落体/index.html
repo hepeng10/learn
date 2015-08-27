@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        #div1{width:100px;height:100px;position:absolute;background:red;}
+    </style>
+</head>
+<body>
+    <input type="button" value="点击" id="input1">
+    <div id="div1"></div>
+
+    <script type="text/javascript">
+    var oInput=document.getElementById('input1');
+    var oDiv=document.getElementById('div1');
+    var timer=null;
+    var iSpeed=0;  //初始化速度
+    oInput.onclick=function(){
+        startMove();
+    }
+    function startMove(){
+        clearInterval(timer);
+        timer=setInterval(function(){
+            iSpeed+=3;  //定时器每次执行速度比上次增加3
+            // iSpeed*=0.9;  不能这样设置阻力
+            var T=oDiv.offsetTop+iSpeed;
+            // 当触屏到下边缘的时候，速度变成反方向，这是速度为负最大值，往上移动，然后会慢慢的每次+3，速度减慢，变成正直，往下移动，如此反复
+            if(T>document.documentElement.clientHeight-oDiv.offsetHeight){
+                T=document.documentElement.clientHeight-oDiv.offsetHeight;
+                iSpeed*=-1;
+                iSpeed*=0.75;  //每次回弹的时候进行一定量的速度损耗（阻力）
+                console.log(iSpeed)
+                // 在回弹的时候速度的绝对值小于每次增量*损耗时，则判定为停止，清除定时器并将div放置到底边（这里的停止速度可根据实际情况觉得）
+                if(Math.abs(iSpeed)<3*0.75){
+                    clearInterval(timer);
+                    oDiv.style.top=document.documentElement.clientHeight-oDiv.offsetHeight+'px';
+                }
+            }
+            oDiv.style.top=T+'px';
+        },30);
+    }
+    </script>
+</body>
+</html>
