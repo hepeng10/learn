@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <style>
+    body,ul{margin:0;padding:0;}
+    input{margin:50px;width:80px;height:30px;font-size:16px;}
+    li{list-style:none;}
+    .list{width:600px;height:420px;margin:50px auto;}
+    .list li{width:58px;height:58px;border:1px solid #000;background:blue;float:left;}
+    </style>
+</head>
+<body>
+    <input type="button" name="" value="展开">
+    <input type="button" name="" value="重置">
+    <ul id="list" class="list">
+        <!-- 70个li，横10个，竖7个 -->
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</body>
+<script type="text/javascript">
+    var oList=document.getElementById('list');
+    var aLi=oList.getElementsByTagName('li');
+    var aInput=document.getElementsByTagName('input');
+    var iRows=oList.offsetHeight/aLi[0].offsetHeight;  //获取行数
+    var iCeils=aLi.length/iRows;  //获取列数
+    // 函数封装，给所有的li设置坐标；并返回一个保存着所有li的二维数组，可通过arr[x][y]获取相应的li对象
+    function setXy(objs,iRows,iCeils){
+        var arr=[];  //二维数组，用来保存所有的li
+        for(var i=0;i<iRows;i++){
+            var arr2=[];
+            for(var j=0;j<iCeils;j++){
+                // 将坐标存到对应的li上
+                objs[i*iCeils+j].xIndex=j;  //当前li的x坐标就是j
+                objs[i*iCeils+j].yIndex=i;  //当前li的y坐标就是i
+                arr2.push(objs[i*iCeils+j]);  //将当前li对象推入到arr2中，每次循环推入一个，最后得到arr2数组的下标对应当前行的li所在位置的列数
+            }
+            arr.push(arr2);  //将arr2推入arr中，for循环后arr中有iRows个arr2，每个arr2在arr中的下标就是这个arr2所在的行数
+        }
+        return arr;
+    }
+    var oXyLi=setXy(aLi,iRows,iCeils);  //给所有li设置坐标，返回一个保存着所有li的二维数组
+    // 函数封装，用于实现li元素不断的切换样式；arr即oXyLi中的元素执行fn，iDelay是延迟
+    function tab(arr,x,y,fn,iDelay,iSpeedX,iSpeedY){
+        if(!arr[y]||!arr[y][x]){
+            return;
+        }
+        if(fn){
+            fn.call(arr[y][x]);  //第arr[y][x]个元素调用fn
+            clearTimeout(arr[y][x].timer);
+            // 延迟执行，让这个li元素左边和上边的li元素继续执行fn，实现递归切换效果
+            arr[y][x].timer=setTimeout(function(){
+                tab(arr,x,y+iSpeedY,fn,iDelay,iSpeedX,iSpeedY);
+                tab(arr,x+iSpeedX,y,fn,iDelay,iSpeedX,iSpeedY);
+            },iDelay);
+        }
+    }
+    for(var i=0;i<aLi.length;i++){
+        aLi[i].onclick=function(){
+        }
+    }
+    aInput[0].onclick=function(){
+        tab(oXyLi,iCeils-1,iRows-1,function(){
+            this.style.background='red';
+        },50,-1,-1);
+    }
+    aInput[1].onclick=function(){
+        tab(oXyLi,0,0,function(){
+            this.style.background='blue';
+        },50,1,1);
+    }
+</script>
+</html>

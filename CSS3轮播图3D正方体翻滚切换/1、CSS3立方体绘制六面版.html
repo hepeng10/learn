@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    /*给最外层容器加了景深属性：perspective，这个元素内的元素在做3D变换的时候都有景深效果*/
+    .wrap{width:200px;height:200px;padding:200px;border:1px solid black;perspective:800px;}
+    /*给父容器加了3D变化属性：transform-style:preserve-3d，这个元素内的元素可以进行3D变换*/
+    .box{width:200px;height:200px;position:relative;transform-style:preserve-3d;transition:3s all;transform:translateZ(-100px);}  /*由于下面每个面为了保持以正方体中心旋转，而往外移了100px，所以这里将整个盒子往内移100px以平衡需求*/
+    .box div{width:200px;height:200px;position:absolute;font-size:100px;font-weight:bold;line-height:200px;text-align:center;color:white;}
+    /*
+    1、定位6个面，下面的布局样式，3和6都在中间
+           1
+        2  36 4
+           5
+    2、给上下左右四个面设置相应的变换原点：transform-origin:bottom;
+    3、将上下左右四个面往里旋转90度：transform:rotateX(-90deg);
+    4、给第6面设置transform:translateZ(-200px);让它沿Z轴往里面移动200px，因为正方形的边长设置的200px，这样正好就在里面和四个面相接。但是在wrap上hover时，旋转box是以box的中心进行旋转的，也就是第3面的中心，而我们需要旋转中心为立方体的中心
+    5、给六个面设置transform:translateZ(100px);把立方体的各个面都往外移一半，这样旋转的中心就在立方体的中心了。注意translateZ需要写在rotate的前面，因为先rotate旋转后，Z轴方向也变了
+    */
+    .box div:nth-of-type(1){background:red;top:-200px;left:0;transform-origin:bottom;transform:translateZ(100px) rotateX(90deg);}
+    .box div:nth-of-type(2){background:blue;top:0px;left:-200px;transform-origin:right;transform:translateZ(100px) rotateY(-90deg);}
+    .box div:nth-of-type(3){background:yellow;top:0;left:0;transform:translateZ(100px);}
+    .box div:nth-of-type(4){background:green;top:0px;left:200px;transform-origin:left;transform:translateZ(100px) rotateY(90deg);}
+    .box div:nth-of-type(5){background:pink;top:200px;left:0;transform-origin:top;transform:translateZ(100px) rotateX(-90deg);}
+    .box div:nth-of-type(6){background:orange;top:0;left:0;transform:translateZ(-100px) rotateX(180deg);}  /*为了让背面的6旋转到正面后是正着显示，而不是显示成9，需要rotateX(180deg)*/
+    /*wrap在hover的时候，box旋转180度，box设置了transition:all的，可以看到旋转的过度动画。由于以X轴旋转180deg后，Z轴方向也相反了，为了让盒子大小不变，上面设置的translateZ(-100px)，这里就该是100px*/
+    .wrap:hover .box{transform:rotateX(180deg) translateZ(100px);}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="box">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+        </div>
+    </div>
+</body>
+</html>

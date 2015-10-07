@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图片3D旋转切换</title>
+    <style id="css">
+        /*这里加边框的目的是消除浏览器渲染出很多黑线的BUG*/
+        .box{width:800px;margin:50px auto;border:1px solid black;}
+        /*使用perspective设置透视*/
+        #picList{margin:0;padding:0;height:360px;perspective:800px;}
+        /*设置preserve-3d变换*/
+        #picList li{list-style:none;float:left;width:25px;height:360px;position:relative;transform-style:preserve-3d;/*transition:1s all;*/transform:translateZ(-180px) rotateX(0deg);}
+        #picList a{position:absolute;left:0;top:0;width:100%;height:100%;}
+        /*四个面进行位移和旋转*/
+        #picList a:nth-of-type(1){background:url(./img/1.jpg) no-repeat;transform:translateZ(180px);}
+        #picList a:nth-of-type(2){background:url(./img/2.jpg) no-repeat;transform-origin:top;transform:translateZ(-180px) rotateX(90deg);}
+        #picList a:nth-of-type(3){background:url(./img/3.jpg) no-repeat;transform:translateZ(-180px) rotateX(180deg);}
+        #picList a:nth-of-type(4){background:url(./img/4.jpg) no-repeat;transform-origin:bottom;transform:translateZ(-180px) rotateX(-90deg);}
+        /*两个侧面*/
+        #picList span{width:360px;height:360px;background:#333;position:absolute;top:0;}
+        #picList span:nth-of-type(1){left:0;transform-origin:left;transform:translateZ(180px) rotateY(90deg)}
+        #picList span:nth-of-type(2){right:0;transform-origin:right;transform:translateZ(180px) rotateY(-90deg)}
+        #btns{padding:50px;height:30px;}
+        #btns li{height:30px;width:30px;background:black;color:white;font-size:16px;text-align:center;line-height:30px;margin:0 10px;float:left;border-radius:50%;list-style:none;}
+        #btns .active{background:orange}
+    </style>
+</head>
+<body>
+    <div>
+        四张图片作为正方体的正面、上面、背面、底面四个面进行旋转（火狐有兼容问题，图片显示不正确）
+    </div>
+    <div class="box">
+        <!-- 容器 -->
+        <ul id="picList">
+            <li>
+                <!-- 四个面 -->
+                <a href="#"></a>
+                <a href="#"></a>
+                <a href="#"></a>
+                <a href="#"></a>
+                <!-- 两个侧面 -->
+                <span></span>
+                <span></span>
+            </li>
+        </ul>
+        <ol id="btns">
+            <li class="active">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ol>
+    </div>
+    <script type="text/javascript">
+    var oPicList=document.getElementById('picList');
+    var oCss=document.getElementById('css');
+    var aBtns=document.getElementById('btns').getElementsByTagName('li');
+    var aPic=[];
+    var iLiW=25;  //li的宽度
+    var sHtml='';
+    var sStyle='';
+    var iZindex=0;
+    var iLength=oPicList.clientWidth/iLiW;  //容器的宽度/li的宽度，得到需要li的个数
+    var iNow=0;
+    // 循环创建li元素，添加到容器中
+    for(var i=0;i<iLength;i++){
+        i>iLength/2?iZindex--:iZindex++;
+        sStyle+='#picList li:nth-of-type('+(i+1)+'){z-index:'+iZindex+';}';  //给每个li添加层级样式
+        sStyle+='#picList li:nth-of-type('+(i+1)+') a{background-position:-'+i*iLiW+'px 0px;}';  //给每个li下的a标签（图片显示区域）进行背景定位计算，得到背景图正确的位置
+        sHtml+='<li>\
+                <a href="#"></a>\
+                <a href="#"></a>\
+                <a href="#"></a>\
+                <a href="#"></a>\
+                <span></span>\
+                <span></span>\
+            </li>';
+    }
+    oPicList.innerHTML=sHtml;
+    oCss.innerHTML+=sStyle;  //将样式添加到style标签中
+    aPic=oPicList.getElementsByTagName('li');
+    for(var i=0;i<aBtns.length;i++){
+        // 页数按钮点击的时候，将图片中的所有li进行旋转
+        aBtns[i].onclick=(function(a){
+            return function(){
+                aBtns[iNow].className='';  //点击页数按钮后，先清空iNow的样式
+                for(var i=0;i<aPic.length;i++){
+                    aPic[i].style.transition='1s '+i*50+'ms all ease-in-out';
+                    aPic[i].style.transform='translateZ(-180px) rotateX(-'+a*90+'deg)';  //给图片中的所有小li添加旋转
+                }
+                this.className='active';  //给当前点击的页数按钮添加样式
+                iNow=a;  //将当前的页数按钮索引赋值给iNow
+            }
+        })(i);
+    }
+    </script>
+</body>
+</html>

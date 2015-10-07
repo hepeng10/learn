@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+    /*给最外层容器加了景深属性：perspective，这个元素内的元素在做3D变换的时候都有景深效果*/
+    .wrap{width:200px;height:200px;padding:200px;border:1px solid black;perspective:800px;}
+    /*给父容器加了3D变化属性：transform-style:preserve-3d，这个元素内的元素可以进行3D变换*/
+    .box{width:200px;height:200px;position:relative;transform-style:preserve-3d;transition:3s all;transform:translateZ(-100px);}  /*由于下面每个面为了保持以正方体中心旋转，而往外移了100px，所以这里将整个盒子往内移100px以平衡需求*/
+    .box div{width:200px;height:200px;position:absolute;font-size:100px;font-weight:bold;line-height:200px;text-align:center;color:white;left:0;top:0;}
+    /*设置四个面*/
+    .box div:nth-of-type(1){background:red;transform:translateZ(100px);}  /*正面往前移动正方体盒子边长的一半*/
+    .box div:nth-of-type(2){background:blue;transform-origin:top;transform:translateZ(-100px) rotateX(90deg);}  /*上面往后移动盒子边长的一半，并以上面为原点旋转90度*/
+    .box div:nth-of-type(3){background:yellow;transform:translateZ(-100px) rotateX(180deg);}  /*背面往后移动盒子边长的一半*/
+    .box div:nth-of-type(4){background:green;transform-origin:bottom;transform:translateZ(-100px) rotateX(-90deg);}/*底面往后移动盒子边长的一半，并以底部为原点旋转-90度*/
+    /*wrap在hover的时候，box旋转180度，box设置了transition:all的，可以看到旋转的过度动画。由于以X轴旋转180deg后，Z轴方向也相反了，为了让盒子大小不变，上面设置的translateZ(-100px)，这里就该是100px*/
+    .wrap:hover .box{transform:rotateX(180deg) translateZ(100px);}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="box">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+        </div>
+    </div>
+</body>
+</html>

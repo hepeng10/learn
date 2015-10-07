@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <style>
+    body,ul{margin:0;padding:0;}
+    input{margin:50px;width:80px;height:30px;font-size:16px;}
+    li{list-style:none;}
+    .list{width:570px;height:420px;margin:50px auto;perspective:600px;transform-style:preserve-3d;}
+    .list li{width:55px;height:58px;float:left;border:1px solid rgba(0,0,0,0);background:url(./images/1.jpg) no-repeat;background-origin:border-box;transition:.5s background,.2s border,.3s .1s box-shadow,2s .3s transform,2s .3s opacity;}/*这里设置了background-origin为border-box，让背景图相对于边框来定位；使用transition进行了多种属性的过度动画*/
+    </style>
+</head>
+<body>
+    <input type="button" name="" value="展开">
+    <input type="button" name="" value="重置">
+    <ul id="list" class="list">
+        <!-- 70个li，横10个，竖7个 -->
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</body>
+<script type="text/javascript">
+    var oList=document.getElementById('list');
+    var aLi=oList.getElementsByTagName('li');
+    var aInput=document.getElementsByTagName('input');
+    var iRows=oList.offsetHeight/aLi[0].offsetHeight;  //获取行数
+    var iCeils=aLi.length/iRows;  //获取列数
+    // 函数封装，给所有的li设置坐标；并返回一个保存着所有li的二维数组，可通过arr[x][y]获取相应的li对象
+    function setXy(objs,iRows,iCeils){
+        var arr=[];  //二维数组，用来保存所有的li
+        for(var i=0;i<iRows;i++){
+            var arr2=[];
+            for(var j=0;j<iCeils;j++){
+                // 将坐标存到对应的li上
+                objs[i*iCeils+j].xIndex=j;  //当前li的x坐标就是j
+                objs[i*iCeils+j].yIndex=i;  //当前li的y坐标就是i
+                objs[i*iCeils+j].style.backgroundPosition=-(j*57)+'px -'+(i*60)+'px';  //在循环中给每个li的背景进行不同的定位，达到所有li的背景恰好组成为一张图的效果
+                arr2.push(objs[i*iCeils+j]);  //将当前li对象推入到arr2中，每次循环推入一个，最后得到arr2数组的下标对应当前行的li所在位置的列数
+            }
+            arr.push(arr2);  //将arr2推入arr中，for循环后arr中有iRows个arr2，每个arr2在arr中的下标就是这个arr2所在的行数
+        }
+        return arr;
+    }
+    var oXyLi=setXy(aLi,iRows,iCeils);  //给所有li设置坐标，返回一个保存着所有li的二维数组
+    // 函数封装，用于实现li元素不断的切换样式；arr即oXyLi中的元素执行fn，iDelay是延迟；iSpeedX和iSpeedY迭代的图片（-1即为左边和上边，1即为右边和下边）
+    function tab(arr,x,y,fn,iDelay,iSpeedX,iSpeedY){
+        if(!arr[y]||!arr[y][x]){
+            return;
+        }
+        if(fn){
+            fn.call(arr[y][x]);  //第arr[y][x]个元素调用fn
+            clearTimeout(arr[y][x].timer);
+            // 延迟执行，让这个li元素左边和上边的li元素继续执行fn，实现递归切换效果
+            arr[y][x].timer=setTimeout(function(){
+                tab(arr,x,y+iSpeedY,fn,iDelay,iSpeedX,iSpeedY);
+                tab(arr,x+iSpeedX,y,fn,iDelay,iSpeedX,iSpeedY);
+            },iDelay);
+        }
+    }
+    for(var i=0;i<aLi.length;i++){
+        aLi[i].onclick=function(){
+        }
+    }
+    // 展开
+    aInput[0].onclick=function(){
+        tab(oXyLi,iCeils-1,iRows-1,function(){
+            // 这里的属性变化都在css中使用了transition来过度，实现了动画效果
+            this.style.transition='.5s background,.2s border,.3s .1s box-shadow,2s .3s transform,2s .3s opacity';  //由于展开和重置的动画速度不同，所以单独设置
+            this.style.borderColor='rgba(0,0,0,0.8)';  //将每个li的边框显示出来
+            this.style.boxShadow='0 0 20px blue';  //给每个li设置蓝色阴影效果
+            this.style.transform='translate(-50px,-100px) rotateX(-720deg) rotateY(-540deg)';  //让每个li进行transform翻转动画和x,y轴的位移
+            this.style.opacity=0;  //让每个li透明
+        },50,-1,-1);
+    }
+    // 重置
+    aInput[1].onclick=function(){
+        tab(oXyLi,0,0,function(){
+            // 让各种属性变回初始状态
+            this.style.transition='.5s background,.1s border,.1s box-shadow,1s transform ease-in,1s opacity';  //由于展开和重置的动画速度不同，所以单独设置
+            this.style.borderColor='rgba(0,0,0,0)';  //将每个li的边框显示出来
+            this.style.boxShadow='0 0 0 blue';  //给每个li设置蓝色阴影效果
+            this.style.transform='translate(0,0) rotateX(0deg) rotateY(0deg)';  //让每个li进行transform翻转动画和x,y轴的位移
+            this.style.opacity=1;  //让每个li透明
+        },50,1,1);
+    }
+</script>
+</html>
