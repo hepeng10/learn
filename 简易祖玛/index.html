@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>简易祖玛</title>
+    <style>
+        *{margin:0;padding:0;}
+        body{background:black;}
+        #div1{background:white;width:600px;margin:20px auto;}
+        /*#c1{background: red}*/
+    </style>
+</head>
+<body>
+    <div id="div1">
+        <canvas id="c1" width="600" height="600"></canvas>
+    </div>
+
+    <script type="text/javascript">
+    var oC=document.getElementById('c1');
+    var oCxt=oC.getContext('2d');
+    var i=0;
+    var iRotate=0;  //蛤蟆旋转的弧度，以鼠标位置而改变
+
+    oC.onmousemove=function(e){
+        var e=e||window.event;
+        var x=e.clientX-oC.offsetLeft;  //计算出鼠标相对canvas画布的坐标
+        var y=e.clientY-oC.offsetTop;
+        var a=x-300;  //a,b,c为鼠标位置和蛤蟆中心构成的直角三角形的三条边
+        var b=y-200;
+        var c=Math.sqrt(a*a+b*b);
+        if(a>0&&b>0){  //鼠标在右下方
+            iRotate=Math.asin(b/c)+90*Math.PI/180;  //计算出鼠标位置与蛤蟆中心的弧度
+        }else if(a>0){  //鼠标在右上方
+            iRotate=Math.asin(a/c);  //计算出鼠标位置与蛤蟆中心的弧度
+        }
+        if(a<0&&b>0){  //鼠标在右下方
+            iRotate=-(Math.asin(b/c)+90*Math.PI/180);  //计算出鼠标位置与蛤蟆中心的弧度
+        }else if(a<0){  //鼠标在右上方
+            iRotate=Math.asin(a/c);  //计算出鼠标位置与蛤蟆中心的弧度
+        }
+    }
+
+    // canvas中使用图片，需要先加载图片
+    var yImg=new Image();
+    yImg.src='person.png';
+    yImg.onload=function(){
+        // 绘制珠子运动的路径函数封装
+        function drawPath(){
+            // 先绘制一个大圆
+            oCxt.beginPath();
+            // 弧度=角度*Math.PI/180
+            oCxt.arc(300,200,200,-90*Math.PI/180,180*Math.PI/180,false);
+            oCxt.stroke();
+            oCxt.closePath();
+            // 再绘制一个小圆，组合成内旋的路径
+            oCxt.beginPath();
+            oCxt.arc(250,200,150,180*Math.PI/180,360*Math.PI/180,false);
+            oCxt.stroke();
+            oCxt.closePath();
+            // 再绘制一个小圆，组合成内旋的路径
+            oCxt.beginPath();
+            oCxt.arc(400,200,20,0*Math.PI/180,360*Math.PI/180,false);
+            oCxt.stroke();
+            oCxt.closePath();
+        }
+
+        // canvas中的动画都是使用定时器不断重绘画布，在重绘的时候改变画布内元素的坐标等
+        setInterval(function(){
+            // 重绘的时候一般都要先清空画布内容
+            oCxt.clearRect(0,0,oC.width,oC.height);
+            drawPath();  //首先绘制珠子运动的路径
+
+            // 绘制蛤蟆图
+            oCxt.save();  //由于下面的translate()连续触发会不断累加，所以这里需要使用save()和restore()
+            oCxt.translate(300,200);  //改变绘图原点的位置（左上角0,0）
+            oCxt.rotate(iRotate);  //旋转画布，以原点为基准点（0,0）
+            oCxt.translate(-40,-40);  //再将原点往回移图片的一半，这样图片旋转时就以图片中心旋转了，否则会以图片左上角旋转
+            oCxt.drawImage(yImg,0,0);  //改变了原点位置和旋转画布之后，再把图片画上去，图片就能在正确的位置了
+            oCxt.restore();
+
+            // 绘制文字
+            oCxt.save();
+            oCxt.font='60px impact';
+            oCxt.textBaseline='top';
+            oCxt.fillStyle='red';
+            oCxt.shadowOffsetX=10;
+            oCxt.shadowOffsetY=10;
+            oCxt.shadowColor='green';
+            oCxt.shadowBlur=5;
+            var w=oCxt.measureText('简易祖玛').width;
+            var h=60;
+            oCxt.fillText('简易祖玛',(oC.width-w)/2,450);
+            oCxt.restore();
+
+            // 更新珠子位置
+            for(var i=0;i<ball.length;i++){
+                oCxt.beginPath();
+                oCxt.moveTo(ball[i].x, ball[i].y);  //将画笔移动到要画的球的圆心位置
+                oCxt.arc(ball[i].x, ball[i].y,20,0*Math.PI/180,360*Math.PI/180,false);
+                oCxt.fill();
+                oCxt.closePath();
+            }
+
+            // 更新子弹位置
+            for(var i=0;i<bullet.length;i++){
+                oCxt.save();
+                oCxt.beginPath();
+                oCxt.fillStyle='red';
+                oCxt.moveTo(bullet[i].x, bullet[i].y);  //将画笔移动到要画的球的圆心位置
+                oCxt.arc(bullet[i].x, bullet[i].y,20,0*Math.PI/180,360*Math.PI/180,false);
+                oCxt.fill();
+                oCxt.closePath();
+                oCxt.restore();
+            }
+        },16);
+
+        //珠子数组
+        var ball=[];
+        // 通过定时器不断生成珠子
+        setInterval(function(){
+            ball.push({
+                x:300,  //当前的x坐标，会动态变化
+                y:0,  //当前的y坐标，会动态变化
+                r:200,  //所走路径的那个圆的半径
+                num:0,  //当前位置（角度），每移动一次+1
+                startX:300,  //珠子运动的起始位置坐标，以所运动的路径的圆为基准，修改后可改变珠子运动的圆路径
+                startY:0
+            });
+        },350);
+
+        // 子弹数组
+        var bullet=[];
+        // 鼠标按下时创建新子弹
+        oC.onmousedown=function(e){
+            var e=e||window.event;
+            var x=e.clientX-oC.offsetLeft;  //计算出鼠标相对canvas画布的坐标
+            var y=e.clientY-oC.offsetTop;
+            var a=x-300;  //a,b,c为鼠标位置和蛤蟆中心构成的直角三角形的三条边
+            var b=y-200;
+            var c=Math.sqrt(a*a+b*b);
+            var speed=5;  //子弹速度
+            var sX=speed*a/c;  //计算出x轴和y轴上的速度
+            var sY=speed*b/c;
+            bullet.push({  //推入一个子弹
+                x:300,  //x轴和y轴的坐标，即为蛤蟆所在位置
+                y:200,
+                sX:sX,  //子弹的速度
+                sY:sY
+            });
+        }
+
+        // 通过定时器不断更新珠子和子弹的位置
+        setInterval(function(){
+            // 更新珠子的位置
+            for(var i=0;i<ball.length;i++){
+                ball[i].num++;
+                if(ball[i].num==270){  //当珠子移动到270度的时候，则进入第二个小圆的路径运动
+                    ball[i].r=150;  //修改珠子的所走圆的半径
+                    ball[i].startX=250;  //修改珠子运动起始位置坐标，以小圆为起始位置
+                    ball[i].startY=50;
+                }
+                if(ball[i].num==270+180){  //270+180为终点位置
+                    alert('游戏结束');
+                    window.location.reload();  //弹出游戏结束的提示框，点击提示框后继续执行，这行会刷新页面
+                }
+                ball[i].x=Math.sin(ball[i].num*Math.PI/180)*ball[i].r+ball[i].startX;
+                ball[i].y=ball[i].r-Math.cos(ball[i].num*Math.PI/180)*ball[i].r+ball[i].startY;
+            }
+            // 更新子弹的位置
+            for(var i=0;i<bullet.length;i++){
+                bullet[i].x=bullet[i].x+bullet[i].sX;
+                bullet[i].y=bullet[i].y+bullet[i].sY;
+            }
+            // 碰撞检测
+            for(var i=0;i<bullet.length;i++){
+                for(var j=0;j<ball.length;j++){
+                    if(pz(bullet[i].x,bullet[i].y,ball[j].x,ball[j].y)){
+                        // 碰上后删除数组中相应的元素
+                        bullet.splice(i,1);
+                        ball.splice(j,1);
+                        break;
+                    }
+                }
+            }
+        },30);
+
+        // 子弹和珠子的碰撞检测：通过判断两个圆圆心的距离是否小于两个圆的半径之和
+        function pz(x1,y1,x2,y2){
+            var a=x1-x2;  //可能会得到负数，但是下面通过勾股定理计算时会进行平方，所以c边总是正数
+            var b=y1-y2;
+            var c=Math.sqrt(a*a+b*b);
+            if(c<40){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
+    </script>
+</body>
+</html>
