@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- 设计图是以640的宽度进行设计的，所以这里width设置为640。在设置CSS样式的时候也就可以根据设计图相对位置的像素来设置像素了 -->
+    <meta name="viewport" content="width=640,user-scalable=no">
+    <title>miaov移动端实战</title>
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
+</head>
+<body>
+    <!-- 欢迎页 -->
+    <section class='page pageShow' id='welcome'>
+        <div class="tree">
+            <img src="img/tree.jpg" alt="">
+            <div class="welcome2">
+                <img src="img/title.png" alt="">
+                <span class='shake'></span>
+            </div>
+            <img src="img/title2.png" class="tree3" alt="">
+            <span class='cloud'></span>
+            <span class='cloud'></span>
+            <span class='cloud'></span>
+        </div>
+        <h1 id="logo"><img src="img/logo.png" alt=""></h1>
+    </section>
+
+    <!-- 跳转页 -->
+    <section id='mask' class='page'></section>
+    <!-- 上传成功 -->
+    <section id='over' class='page'>
+        <div class="tree">
+            <img src="img/tree.jpg" alt="">
+            <div class="welcome2">
+                <img src="img/tranks2.png" alt="">
+            </div>
+            <span class='cloud'></span>
+            <span class='cloud'></span>
+            <span class='cloud'></span>
+        </div>
+        <input class="btn submit" type="button" name="" value="重新评价">
+    </section>
+    <!-- 表单页 -->
+    <section id='form' class='page'>
+            <section id="formTag" class='tags'>
+                <h2>给视频添加标签</h2>
+                <label><input type="radio" name="tags2" value="服务好"><span>服务好</span></label>
+                <label><input type="radio" name="tags2" value="景色赞"><span>景色赞</span></label>
+                <label><input type="radio" name="tags2" value="千篇一律"><span>千篇一律</span></label>
+                <label><input type="radio" name="tags2" value="看人海"><span>看人海</span></label>
+                <label><input type="radio" name="tags2" value="挤爆了"><span>挤爆了</span></label>
+                <label><input type="radio" name="tags2" value="服务好"><span>服务好</span></label>
+                <label><input type="radio" name="tags2" value="景色赞"><span>景色赞</span></label>
+                <label><input type="radio" name="tags2" value="千篇一律"><span>千篇一律</span></label>
+                <label><input type="radio" name="tags2" value="看人海"><span>看人海</span></label>
+                <label><input type="radio" name="tags2" value="挤爆了"><span>挤爆了</span></label>
+            </section>
+            <textarea class="formText" name="" placeholder="（选填：说点什么呢~~）" rows="5"></textarea>
+            <input class="formText" type="tel" name="" value="" placeholder="（选填：说点什么呢~~）">
+            <input class="btn" type="button" name="" value="上传">
+        </section>
+    <!-- 新闻页 -->
+    <section id='news' class='page'>
+        <img src="./img/news.png" alt="">
+        <h2>轻上传旅游投诉以及突发事件线索</h2>
+        <section class='file'>
+            <label>
+                <input type="file">
+                <span>导入视频</span>
+            </label>
+            <label>
+                <input type="file">
+                <span>上传照片</span>
+            </label>
+            <p class="info"></p>
+        </section>
+    </section>
+    <!-- 首页：这里跳转到其他页面，只是将其他页面显示出来，并没有隐藏首页，所以要把首页放在最后面；因为最后有个重新评价调回首页，所以用了这样的设计 -->
+    <section id='index' class='page pageShow'>
+        <!-- 调整高度，添加滚动条 -->
+        <section class='scrollWrap'>
+            <section id='tabPic'>
+                <ul id="picList">
+                    <li><img src="img/1.jpg" alt=""></li>
+                    <li><img src="img/2.jpg" alt=""></li>
+                    <li><img src="img/3.jpg" alt=""></li>
+                    <li><img src="img/4.jpg" alt=""></li>
+                    <li><img src="img/5.jpg" alt=""></li>
+                </ul>
+                <section class='picMask'>
+                    <p>九寨沟景区</p>
+                    <nav>
+                        <a href='javascript:;' class="active"></a>
+                        <a href='javascript:;'></a>
+                        <a href='javascript:;'></a>
+                        <a href='javascript:;'></a>
+                        <a href='javascript:;'></a>
+                    </nav>
+                </section>
+            </section>
+            <a class="newsBtn" href="javascript:;">
+                <em>新闻线索</em>
+                <!-- span标签是用作缩放动画的 -->
+                <span></span><span></span><span></span>
+            </a>
+            <section id='score'>
+                <h2>给景点评分</h2>
+                <ul class="scoreList">
+                    <li>
+                        <span>综合印象</span>
+                        <nav>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                        </nav>
+                        <input type="hidden" name="" value="0">
+                    </li>
+                    <li>
+                        <span>服务指数</span>
+                        <nav>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                        </nav>
+                        <input type="hidden" name="" value="0">
+                    </li>
+                    <li>
+                        <span>消费指数</span>
+                        <nav>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                            <a href="javascript:;"></a>
+                        </nav>
+                        <input type="hidden" name="" value="0">
+                    </li>
+                </ul>
+            </section>
+            <section id="indexTag" class='tags'>
+                <h2>给景区添加标签</h2>
+                <label><input type="radio" name="tags" value="服务好"><span>服务好</span></label>
+                <label><input type="radio" name="tags" value="景色赞"><span>景色赞</span></label>
+                <label><input type="radio" name="tags" value="千篇一律"><span>千篇一律</span></label>
+                <label><input type="radio" name="tags" value="看人海"><span>看人海</span></label>
+                <label><input type="radio" name="tags" value="挤爆了"><span>挤爆了</span></label>
+                <label><input type="radio" name="tags" value="服务好"><span>服务好</span></label>
+                <label><input type="radio" name="tags" value="景色赞"><span>景色赞</span></label>
+                <label><input type="radio" name="tags" value="千篇一律"><span>千篇一律</span></label>
+                <label><input type="radio" name="tags" value="看人海"><span>看人海</span></label>
+                <label><input type="radio" name="tags" value="挤爆了"><span>挤爆了</span></label>
+            </section>
+            <p class="info">提示信息</p>
+            <input type="button" value="提交" class="btn submit">
+        </section>
+    </section>
+
+    <!-- 封装的一些JS函数 -->
+    <script src="./js/prefixfree.js"></script>
+    <script src="./js/index.js"></script>
+    <script type="text/javascript">
+    document.body.style.height=view().h+'px';
+    fnLoad();
+    </script>
+</body>
+</html>
