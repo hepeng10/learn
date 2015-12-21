@@ -84,10 +84,9 @@
         }
     };
 
-    // H5Page构造函数
+    // 创建Page构造函数
     function H5Page(id){
-        this.index=0;  //当前页索引
-        this.preindex=0;  //上一页索引
+        this.index=0;
         this.dom=document.getElementById(id);
         this.movePage=null;  //划动的时候当前要操作的page
         this.status='';  //保存当前是上划还是下划的状态，如果从切换了上划下划状态，可以通过它监测到
@@ -96,18 +95,16 @@
         this.moveNowY=0;  //不断计算出的当前划动的距离（这次减上次）
     }
     H5Page.prototype.init=function(){
-        this.touch();
+        this.touch(this.dom);
         this.initAnimate();
     }
     H5Page.prototype.touch=function(){
         var _this=this;
-        // touchstart
-        this.dom.addEventListener('touchstart',function(e){
+        this.dom.ontouchstart=function(e){
             var touch=e.changedTouches[0];
             var touchStartY=Math.floor(touch.clientY);
-            _this.moveY=0;
-            // touchmove
-            function touchMoveEv(e){
+            this.moveY=0;
+            _this.dom.ontouchmove=function(e){
                 var touch=e.changedTouches[0];
                 var touchMoveY=Math.floor(touch.clientY);
                 _this.moveY=touchMoveY-touchStartY;
@@ -136,13 +133,9 @@
                 // 当前的translateY值加上当前变化的y值得到最新的translateY值
                 _this.movePage.style.webkitTransform='translateY('+(nowY+_this.moveNowY)+'px)';
             }
-            _this.dom.addEventListener('touchmove',touchMoveEv);
-            // touchend
-            function touchEndEv(e){
+            _this.dom.ontouchend=function(){
                 // 在touchend的时候添加过度效果，不能在一开始就有过度效果，会导致每次touchmove的距离都有过度，而touchmove的距离很短，却也需要那么长的时间来完成过度动画，这样就会导致画面抖动。所以在touchmove的时候就正常的直接设置位移就行
-                if(_this.movePage){
-                    _this.movePage.classList.add('transition');
-                }
+                _this.movePage.classList.add('transition');
                 // 重置这两个属性
                 _this.movePreY=0;
                 _this.status='';
@@ -152,33 +145,28 @@
                 // 通过位移来决定是否翻页
                 if(_this.moveY<-150){
                     _this.movePage.style.webkitTransform='translateY('+(-h)+'px)';
-                    _this.preindex=_this.index;
                     _this.index++;
                     _this.animate();
-                    cvsDraw.index++;
+                    index++;
                 }else if(_this.moveY>150){
                     _this.movePage.style.webkitTransform='translateY('+0+'px)';
-                    _this.preindex=_this.index;
                     _this.index--;
                     _this.animate();
-                    cvsDraw.index--;
+                    index--;
                 }else if(_this.moveY>0 && _this.moveY<150){
                     _this.movePage.style.webkitTransform='translateY('+(-h)+'px)';
                 }else if(_this.moveY<0 && _this.moveY>-150){
                     _this.movePage.style.webkitTransform='translateY('+0+'px)';
                 }
-                _this.dom.removeEventListener('touchmove',touchMoveEv);
-                _this.dom.removeEventListener('touchend',touchEndEv);
+                _this.dom.ontouchmove=null;
+                _this.dom.ontouchmove=null;
                 // 过渡动画结束后，需要移除过渡动画类，因为这一页还可能回翻
-                if(_this.movePage){
-                    var transitionPage=_this.movePage;
-                    setTimeout(function(){
-                        transitionPage.classList.remove('transition');
-                    },500);
-                }
+                var transitionPage=_this.movePage;
+                setTimeout(function(){
+                    transitionPage.classList.remove('transition');
+                },500);
             }
-            _this.dom.addEventListener('touchend',touchEndEv);
-        })
+        }
     }
     // 首页下划和最后一页上划，不能动
     H5Page.prototype.canMove=function(){
@@ -206,9 +194,6 @@
                                 <p>那一天</p>\
                                 <p>遇见</p>\
                                 <p>那个你</p>";
-                // 清空上个页面的内容
-                var predom=document.getElementById('page'+this.preindex);
-                predom.innerHTML='';
                 break;
             case 1:
                 var dom=document.getElementById('page'+this.index);
@@ -216,8 +201,6 @@
                                 <p>那个我</p>\
                                 <p>不一样的</p>\
                                 <p>心跳</p>";
-                var predom=document.getElementById('page'+this.preindex);
-                predom.innerHTML='';
                 break;
             case 2:
                 var dom=document.getElementById('page'+this.index);
@@ -229,8 +212,6 @@
                                 <span>不</span>\
                                 <span>可</span>\
                                 <span>及</span>";
-                var predom=document.getElementById('page'+this.preindex);
-                predom.innerHTML='';
                 break;
             case 3:
                 var dom=document.getElementById('page'+this.index);
@@ -241,8 +222,6 @@
                                 <p>也许，我也不够优秀。可我，真的愿意为你改变。</p>\
                                 <p>那天，也是我太冲动，每次回忆都能感受到自己的愚蠢。不过这些天的自省，也确实明白了很多道理。</p>\
                             </div>";
-                var predom=document.getElementById('page'+this.preindex);
-                predom.innerHTML='';
                 break;
             case 4:
                 var dom=document.getElementById('page'+this.index);
@@ -252,8 +231,6 @@
                                 <p>你愿意原谅他吗？</p>\
                                 <a href='http://nm.abbs.com.cn/first.php/Home/Ticket/sure/sure/1'>愿意</a>\
                                 <a href='http://nm.abbs.com.cn/first.php/Home/Ticket/sure/sure/2'>不愿意</a>";
-                var predom=document.getElementById('page'+this.preindex);
-                predom.innerHTML='';
                 break;
         }
     }
@@ -261,74 +238,68 @@
     h5page.init();
 
 
-    // canvas绘制
+    // canvas相关变量
     var canvas=document.getElementById('canvas');
     canvas.width=w;
     canvas.height=60;
+    var x=w/2,  //绘制的起点坐标
+        y=30,
+        alpha=0.0,
+        alphaOF=false,  //透明度该加还是该减的开关
+        index=0,  //当前页面是第几页
+        index2=0,  //划动改变页面后，用来进行比较，判断页面改变状况
+        t=0;
     var cxt=canvas.getContext('2d');
-    var cvsDraw={
-        x:w/2,  //绘制的起点坐标
-        y:30,
-        alpha:0.0,
-        alphaOF:false,  //透明度该加还是该减的开关
-        index:0,  //当前页面是第几页
-        index2:0,  //划动改变页面后，用来进行比较，判断页面改变状况
-        t:0,  //定时器
-        init:function(){
-            var _this=this;
-            this.t=setInterval(function(){  //每隔30ms重绘一次，并修改坐标和透明度
-              _this.draw();
-            }, 30);
-        },
-        draw:function(){
-            // 每次绘制的时候先清空绘制区域
-            cxt.clearRect(0,0,w,60);
-            if(this.index2!=this.index){  //页面切换的时候停止动画并将位置重置为初始位置
-              clearInterval(this.t);
-              this.y=30;
-              this.alpha=0.0;
-              this.alphaOF=false;
-              // 注意这里由于是在setTimeout中，所以在再次调用cvsDraw中的方法的时候，需要使用bind()来改变this指向
-              setTimeout(this.init.bind(this),800);
-              this.index2=this.index;
-              return false;
-            }
-            if(this.index<aSection.length-1){  //当index小于最后一页的时候才绘制
-              cxt.beginPath();
-              cxt.moveTo(this.x,this.y);
-              cxt.lineTo(this.x+30,this.y+25);
-              cxt.lineTo(this.x,this.y+15);
-              cxt.lineTo(this.x-30,this.y+25);
-              cxt.fillStyle='rgba(255,255,255,'+this.alpha+')';
-              cxt.shadowColor='#666';
-              cxt.shadowOffsetX=0;
-              cxt.shadowOffsetY=5;
-              cxt.shadowBlur=3;
-              cxt.fill();
-              cxt.closePath();
-            }
-            this.changeAlpha();
-        },
-        changeAlpha:function(){
-              this.y-=1;
-              if(this.alpha>=1.0 || this.alphaOF){
-                if(this.alpha<=0.1){
-                  this.alphaOF=false;
-                }
-                this.alpha-=0.06;
-              }else{
-                this.alpha+=0.06;
-                if(this.alpha>=0.9){
-                  this.alphaOF=true;
-                }
-              }
-              if (this.y<=0) {
-                this.y=30;
-                this.alpha=0.0;
-                this.alphaOF=false;
-              }
-        }
+  // canvas绘制底部箭头，draw函数是在setInterval()中不断调用的
+  function draw(){
+    // 每次绘制的时候先清空绘制区域
+    cxt.clearRect(0,0,w,60);
+    if(index2!=index){  //页面切换的时候停止动画并将位置重置为初始位置
+      clearInterval(t);
+      y=30;
+      alpha=0.0;
+      alphaOF=false;
+      setTimeout(change,1000);
+      index2=index;
+      return false;
     }
-    cvsDraw.init();
+    if(index<4){  //当index小于最后一页的时候才绘制
+      cxt.beginPath();
+      cxt.moveTo(x,y);
+      cxt.lineTo(x+30,y+25);
+      cxt.lineTo(x,y+15);
+      cxt.lineTo(x-30,y+25);
+      cxt.fillStyle='rgba(255,255,255,'+alpha+')';
+      cxt.shadowColor='#666';
+      cxt.shadowOffsetX=0;
+      cxt.shadowOffsetY=5;
+      cxt.shadowBlur=3;
+      cxt.fill();
+      cxt.closePath();
+    }
+  }
+  function change(){
+    t=setInterval(function(){  //每隔30ms重绘一次，并修改坐标和透明度
+      draw();
+      y-=1;
+      if(alpha>=1.0 || alphaOF){
+        if(alpha<=0.1){
+          alphaOF=false;
+        }
+        alpha-=0.06;
+      }else{
+        alpha+=0.06;
+        if(alpha>=0.9){
+          alphaOF=true;
+        }
+      }
+      if (y<=0) {
+        y=30;
+        alpha=0.0;
+        alphaOF=false;
+      }
+    }, 30);
+  }
+  change();
 </script>
 </html>

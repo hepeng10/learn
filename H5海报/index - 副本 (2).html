@@ -84,7 +84,7 @@
         }
     };
 
-    // H5Page构造函数
+    // 创建Page构造函数
     function H5Page(id){
         this.index=0;  //当前页索引
         this.preindex=0;  //上一页索引
@@ -96,7 +96,7 @@
         this.moveNowY=0;  //不断计算出的当前划动的距离（这次减上次）
     }
     H5Page.prototype.init=function(){
-        this.touch();
+        this.touch(this.dom);
         this.initAnimate();
     }
     H5Page.prototype.touch=function(){
@@ -155,13 +155,13 @@
                     _this.preindex=_this.index;
                     _this.index++;
                     _this.animate();
-                    cvsDraw.index++;
+                    index++;
                 }else if(_this.moveY>150){
                     _this.movePage.style.webkitTransform='translateY('+0+'px)';
                     _this.preindex=_this.index;
                     _this.index--;
                     _this.animate();
-                    cvsDraw.index--;
+                    index--;
                 }else if(_this.moveY>0 && _this.moveY<150){
                     _this.movePage.style.webkitTransform='translateY('+(-h)+'px)';
                 }else if(_this.moveY<0 && _this.moveY>-150){
@@ -261,74 +261,68 @@
     h5page.init();
 
 
-    // canvas绘制
+    // canvas相关变量
     var canvas=document.getElementById('canvas');
     canvas.width=w;
     canvas.height=60;
+    var x=w/2,  //绘制的起点坐标
+        y=30,
+        alpha=0.0,
+        alphaOF=false,  //透明度该加还是该减的开关
+        index=0,  //当前页面是第几页
+        index2=0,  //划动改变页面后，用来进行比较，判断页面改变状况
+        t=0;
     var cxt=canvas.getContext('2d');
-    var cvsDraw={
-        x:w/2,  //绘制的起点坐标
-        y:30,
-        alpha:0.0,
-        alphaOF:false,  //透明度该加还是该减的开关
-        index:0,  //当前页面是第几页
-        index2:0,  //划动改变页面后，用来进行比较，判断页面改变状况
-        t:0,  //定时器
-        init:function(){
-            var _this=this;
-            this.t=setInterval(function(){  //每隔30ms重绘一次，并修改坐标和透明度
-              _this.draw();
-            }, 30);
-        },
-        draw:function(){
-            // 每次绘制的时候先清空绘制区域
-            cxt.clearRect(0,0,w,60);
-            if(this.index2!=this.index){  //页面切换的时候停止动画并将位置重置为初始位置
-              clearInterval(this.t);
-              this.y=30;
-              this.alpha=0.0;
-              this.alphaOF=false;
-              // 注意这里由于是在setTimeout中，所以在再次调用cvsDraw中的方法的时候，需要使用bind()来改变this指向
-              setTimeout(this.init.bind(this),800);
-              this.index2=this.index;
-              return false;
-            }
-            if(this.index<aSection.length-1){  //当index小于最后一页的时候才绘制
-              cxt.beginPath();
-              cxt.moveTo(this.x,this.y);
-              cxt.lineTo(this.x+30,this.y+25);
-              cxt.lineTo(this.x,this.y+15);
-              cxt.lineTo(this.x-30,this.y+25);
-              cxt.fillStyle='rgba(255,255,255,'+this.alpha+')';
-              cxt.shadowColor='#666';
-              cxt.shadowOffsetX=0;
-              cxt.shadowOffsetY=5;
-              cxt.shadowBlur=3;
-              cxt.fill();
-              cxt.closePath();
-            }
-            this.changeAlpha();
-        },
-        changeAlpha:function(){
-              this.y-=1;
-              if(this.alpha>=1.0 || this.alphaOF){
-                if(this.alpha<=0.1){
-                  this.alphaOF=false;
-                }
-                this.alpha-=0.06;
-              }else{
-                this.alpha+=0.06;
-                if(this.alpha>=0.9){
-                  this.alphaOF=true;
-                }
-              }
-              if (this.y<=0) {
-                this.y=30;
-                this.alpha=0.0;
-                this.alphaOF=false;
-              }
-        }
+  // canvas绘制底部箭头，draw函数是在setInterval()中不断调用的
+  function draw(){
+    // 每次绘制的时候先清空绘制区域
+    cxt.clearRect(0,0,w,60);
+    if(index2!=index){  //页面切换的时候停止动画并将位置重置为初始位置
+      clearInterval(t);
+      y=30;
+      alpha=0.0;
+      alphaOF=false;
+      setTimeout(change,1000);
+      index2=index;
+      return false;
     }
-    cvsDraw.init();
+    if(index<4){  //当index小于最后一页的时候才绘制
+      cxt.beginPath();
+      cxt.moveTo(x,y);
+      cxt.lineTo(x+30,y+25);
+      cxt.lineTo(x,y+15);
+      cxt.lineTo(x-30,y+25);
+      cxt.fillStyle='rgba(255,255,255,'+alpha+')';
+      cxt.shadowColor='#666';
+      cxt.shadowOffsetX=0;
+      cxt.shadowOffsetY=5;
+      cxt.shadowBlur=3;
+      cxt.fill();
+      cxt.closePath();
+    }
+  }
+  function change(){
+    t=setInterval(function(){  //每隔30ms重绘一次，并修改坐标和透明度
+      draw();
+      y-=1;
+      if(alpha>=1.0 || alphaOF){
+        if(alpha<=0.1){
+          alphaOF=false;
+        }
+        alpha-=0.06;
+      }else{
+        alpha+=0.06;
+        if(alpha>=0.9){
+          alphaOF=true;
+        }
+      }
+      if (y<=0) {
+        y=30;
+        alpha=0.0;
+        alphaOF=false;
+      }
+    }, 30);
+  }
+  change();
 </script>
 </html>
