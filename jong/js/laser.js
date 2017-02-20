@@ -142,6 +142,13 @@ Laser.prototype.Gameover=function(){
     cxt.lineWidth=2;
     cxt.strokeRect(jong.x+10,jong.y+18,10,14);
     cxt.closePath();
+    console.log(score,highestScore)
+    // 判断是否破纪录
+    if(score>highestScore){
+        console.log(1)
+        highest.innerHTML=score;
+        localStorage.highestScore=score;
+    }
     // 重置游戏数据
     info.style.marginTop=-100+'px';
     laser=[];

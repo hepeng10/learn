@@ -24,7 +24,6 @@
 </head>
 
 <body id="page">
-    <audio src="./bg.mp3" autoplay="autoplay" controls="controls" data-ke-src="./bg.mp3" loop="loop" style="display:none;"></audio>
     <section id="page0" class="pageWrapper">
         <!-- <p>那个小镇</p>
         <p>那一天</p>
@@ -63,14 +62,16 @@
         <a href="">原谅</a>
         <a href="">不原谅</a> -->
     </section>
+    
+    <audio src="./bg.mp3" autoplay="autoplay" controls="controls" data-ke-src="./bg.mp3" loop="loop" style="display:none;"></audio>
     <canvas id='canvas'></canvas>
 
-    <a style="font-size:50px;position:fixed;bottom:0;right:0;opacity:0.1;z-index:999;color:black;text-decoration:none;" href="javascript:window.location.reload()">刷新</a>
+    <a style="font-size:50px;position:fixed;bottom:0;right:0;opacity:0.1;z-index:9999;color:black;text-decoration:none;" href="javascript:window.location.reload()">刷新</a>
 </body>
 <script type="text/javascript">
     document.addEventListener('touchmove',function(e){
         e.preventDefault();
-    });
+    },false);
     var w=document.documentElement.clientWidth;
     var h=document.documentElement.clientHeight;
 
@@ -136,7 +137,7 @@
                 // 当前的translateY值加上当前变化的y值得到最新的translateY值
                 _this.movePage.style.webkitTransform='translateY('+(nowY+_this.moveNowY)+'px)';
             }
-            _this.dom.addEventListener('touchmove',touchMoveEv);
+            _this.dom.addEventListener('touchmove',touchMoveEv,false);
             // touchend
             function touchEndEv(e){
                 // 在touchend的时候添加过度效果，不能在一开始就有过度效果，会导致每次touchmove的距离都有过度，而touchmove的距离很短，却也需要那么长的时间来完成过度动画，这样就会导致画面抖动。所以在touchmove的时候就正常的直接设置位移就行
@@ -167,8 +168,8 @@
                 }else if(_this.moveY<0 && _this.moveY>-150){
                     _this.movePage.style.webkitTransform='translateY('+0+'px)';
                 }
-                _this.dom.removeEventListener('touchmove',touchMoveEv);
-                _this.dom.removeEventListener('touchend',touchEndEv);
+                _this.dom.removeEventListener('touchmove',touchMoveEv,false);
+                _this.dom.removeEventListener('touchend',touchEndEv,false);
                 // 过渡动画结束后，需要移除过渡动画类，因为这一页还可能回翻
                 if(_this.movePage){
                     var transitionPage=_this.movePage;
@@ -177,8 +178,8 @@
                     },500);
                 }
             }
-            _this.dom.addEventListener('touchend',touchEndEv);
-        })
+            _this.dom.addEventListener('touchend',touchEndEv,false);
+        },false)
     }
     // 首页下划和最后一页上划，不能动
     H5Page.prototype.canMove=function(){

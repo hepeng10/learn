@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <title>Jong</title>
     <style>
-    body{margin:0;padding:0;background-color:black;color:white;}
+    body{margin:0;padding:0;background-color:black;color:white;overflow-y:hidden;}
     #info{width:100%;height:200px;text-align:center;position:absolute;top:50%;margin-top:-100px;font-size:20px;}
     #info div{margin-top:20px;line-height:170%;}
     #info p{margin-top:40px;font-weight:bold;color:pink;}
     #score{width:100%;text-align:center;font-size:20px;font-weight:bold;color:#ccc;position:absolute;}
+    #game{opacity:1;}
     </style>
 </head>
 <body>
@@ -17,7 +18,7 @@
         <div>点击屏幕进行移动<br>躲避发射出的彩条</div>
         <p id="start">开始游戏</p>
     </div>
-    <p id="score">Score:<span id="s">0</span></p>
+    <p id="score">Score:<span id="s">0</span>　　　<span>Highest: <span id="highest">0</span></span></p>
     <canvas id="game"></canvas>
 
     <script src="./jong.js"></script>
@@ -27,6 +28,7 @@
     document.addEventListener('touchmove',function(e){
         e.preventDefault();
     });
+    var highest=document.getElementById('highest');
     var info=document.getElementById('info');
     var start=document.getElementById('start');
     var s=document.getElementById('s');
@@ -40,6 +42,13 @@
     var score=0;  //得分
     var createLaserTime=1000;
     var timer,timer2;
+    // 初始化最高分
+    var highestScore=localStorage.highestScore;
+    if(highestScore){
+        highest.innerHTML=highestScore;
+    }else{
+        localStorage.highestScore=0;
+    }
     // 开始游戏
     function startGame(){
         cxt.clearRect(0,0,canvas.width,canvas.height);
